@@ -10,6 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@meteorrn/core": "^2.3.0",
+    "@react-native-async-storage/async-storage": "^1.17.11",
+    "@react-native-community/netinfo": "^9.3.7",
     "react": "18.2.0",
     "react-native": "0.71.2"
   },
