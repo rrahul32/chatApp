@@ -1,9 +1,9 @@
 // Methods related to links
 
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import { Links } from './links.js';
-
+const otpCollection = new Mongo.Collection('otp');
 Meteor.methods({
   'links.insert'(title, url) {
     check(url, String);
@@ -14,5 +14,29 @@ Meteor.methods({
       title,
       createdAt: new Date(),
     });
+  },
+  'phone.verify'(phone){
+    const matchPhone=Match.Where(function(phone){
+    const regExp= /^[6-9]{1}[0-9]{9}/;
+    return phone.match(regExp);
+    });
+    check(phone,matchPhone);
+  },
+  'otp.send'(){
+    const random = Math.floor(Math.random() * 9000 + 1000);
+    console.log(random);
+    
+    return otpCollection.insert({"id":"1","otp":random});
+
+
+  },
+  'otp.verify'(otp){
+    const coll=otpCollection.findOne();
+    if(coll.otp==otp)
+    return true;
+    else
+    return false;
+    // if(coll.otp!=otp)
+    // return false;
   },
 });
