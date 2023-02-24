@@ -19,7 +19,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 //import { Auth } from 'aws-amplify'; // or use any other library for OTP verification
 
 
-Meteor.connect("ws://10.0.0.24:3000/websocket");
+Meteor.connect("ws://192.168.178.154:3000/websocket");
 
 export default function App(){
   const [phoneNumber, setPhoneNumber] = useState('');

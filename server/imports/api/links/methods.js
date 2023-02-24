@@ -32,6 +32,7 @@ Meteor.methods({
   },
   'otp.verify'(otp){
     const coll=otpCollection.findOne();
+    console.log(coll.otp)
     if(coll.otp==otp)
     return true;
     else
