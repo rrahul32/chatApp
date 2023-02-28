@@ -9,7 +9,7 @@ import Meteor, { Mongo, withTracker } from '@meteorrn/core';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-Meteor.connect("ws://192.168.25.154:3000/websocket");
+Meteor.connect("ws://192.168.46.154:3000/websocket");
 
 export default function Login({onLoggedIn}){
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -45,6 +45,7 @@ export default function Login({onLoggedIn}){
         if(data)
         {
           onLoggedIn();
+          // alert("dd")
         }
         else
         {
