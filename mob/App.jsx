@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Home from './src/screens/auth/Home';
+import ChatWindow from './src/screens/auth/ChatWindow';
 import Login from './src/screens/Login';
 
 const App = () => {
@@ -9,7 +10,7 @@ const App = () => {
     setLoginStatus(true);
   }
   return (
-   loginStatus?<Home />: <Login onLoggedIn={handleLogin} />
+   loginStatus?<ChatWindow />: <Login onLoggedIn={handleLogin} />
   )
 }
 
