@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 const ChatWindowHeader = ({ name, avatar }) => {
   return (
     <View style={styles.container}>
@@ -9,6 +9,7 @@ const ChatWindowHeader = ({ name, avatar }) => {
         <Text style={styles.name}>{name}</Text>
       </View>
       <TouchableOpacity style={styles.rightContainer}>
+        <Icon name='options-outline'/>
       </TouchableOpacity>
     </View>
   );

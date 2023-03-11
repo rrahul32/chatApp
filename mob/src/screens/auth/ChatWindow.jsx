@@ -32,7 +32,8 @@ export default function ChatWindow() {
   return (
     <View style={styles.container}>
       <ChatWindowHeader name="Native" avatar='https://placeimg.com/140/140/any' />
-    <GiftedChat
+    <GiftedChat 
+    textInputStyle={styles.input}
       messages={messages}
       onSend={(newMessages) => onSend(newMessages)}
       user={{ 
@@ -48,4 +49,7 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#fff',
     },
+    input:{
+      color: 'black'
+    }
   });

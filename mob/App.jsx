@@ -10,7 +10,7 @@ const App = () => {
     setLoginStatus(true);
   }
   return (
-   loginStatus?<ChatWindow />: <Login onLoggedIn={handleLogin} />
+   loginStatus?<Home />: <Login onLoggedIn={handleLogin} />
   )
 }
 
