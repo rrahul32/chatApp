@@ -1,2 +1,2 @@
-import otpAuth from "./OtpAuth";
-console.log(otpAuth());
+import phoneInit from "./phone";
+phoneInit.registerLoginHandler();
