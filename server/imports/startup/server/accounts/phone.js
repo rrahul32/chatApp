@@ -39,6 +39,7 @@ class Phone {
       "sendVerificationCode": (phone, isAddPhoneNumber = false) => {
         // console.log(phone);
         check(phone, String);
+        console.log("Meteor.settings.dev", Meteor.settings.dev)
         return this.sendVerificationCode(phone, isAddPhoneNumber, Meteor.settings.dev, Meteor.settings.appReview);
       }
     });

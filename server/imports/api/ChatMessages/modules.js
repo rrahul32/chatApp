@@ -14,7 +14,7 @@ export const createChatMessage = (chatId, userId, messageData) => {
       chatId,
       text: messageData.text,
       image: messageData.image,
-      createdBy: {
+      createdBy: { 
         id: userId
       }
     });

@@ -9,7 +9,7 @@ import SimpleSchema from "simpl-schema";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Meteor } from "meteor/meteor";
 
-import rateLimit from "../../modules/rate-limit";
+import rateLimit from "../../lib/rate-limit";
 import { errorMessages } from "../../config/strings.js";
 import ProfileImages from "./ProfileImages";
 
@@ -44,13 +44,16 @@ export const updateProfileDetails = new ValidatedMethod({
   name: "updateProfileDetails",
   validate: new SimpleSchema({
     name: {
-      type: String
+      type: String,
+      optional: true
     },
-    country: {
-      type: countrySchema
-    }
+    // country: {
+    //   type: countrySchema,
+    //   optional: true
+    // }
   }).validator(),
   run(data) {
+    console.log(data)
     const thisUser = Meteor.user();
     if (thisUser) {
       let query;
@@ -59,11 +62,11 @@ export const updateProfileDetails = new ValidatedMethod({
           "profile.name": data.name
         };
       }
-      if (data.country) {
-        Object.assign(query, {
-          "profile.country": data.country
-        });
-      }
+      // if (data.country) {
+      //   Object.assign(query, {
+      //     "profile.country": data.country
+      //   });
+      // }
       Meteor.users.update({
         _id: thisUser._id
       }, {
@@ -325,6 +328,7 @@ export const removePushSubscription = new ValidatedMethod({
 
 rateLimit({
   methods: [
+    updateProfileDetails,
     uploadProfileImage,
     removeProfileImage,
     updateDeviceInfo,
