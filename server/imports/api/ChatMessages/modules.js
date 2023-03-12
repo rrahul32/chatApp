@@ -6,15 +6,7 @@
 "use strict";
 
 import ChatMessages from "./";
-import { getChatDetails, incrementChatCount } from "../Chat/modules";
-import { AppConstants } from "../../../config";
-import { getBusiness, getBusinessDetailsBasic } from "../Business/modules";
-import { getUserDetails } from "../Users/modules";
-import { createPushNotification } from "../Notifications/modules";
-
-const pushNotificationPayloads = AppConstants.pushNotificationPayloads;
-const notificationCategories = AppConstants.notificationCategories;
-const userTypes = AppConstants.userTypes;
+import { incrementChatCount } from "../Chat/modules";
 
 export const createChatMessage = (chatId, userId, messageData) => {
   return new Promise((resolve, reject) => { // eslint-disable-line no-undef
