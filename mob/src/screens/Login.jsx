@@ -44,6 +44,7 @@ export default function Login({onLoggedIn}){
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
+        placeholderTextColor={'#777'}
         keyboardType="phone-pad"
         onChangeText={text => setPhoneNumber(text)}
         value={phoneNumber}
@@ -82,6 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
+    color:'#666',
   },
   input: {
     width: '80%',
