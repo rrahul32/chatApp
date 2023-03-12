@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View,Image } from 'react-native'
 import React from 'react';
-import Icon from 'react-native-ionicons';
+// import Icon from 'react-native-ionicons';
 
 
 const ChatHead = ({item}) => {
@@ -14,7 +14,7 @@ const ChatHead = ({item}) => {
         </View>
         <Text style={styles.itemLastMessage} numberOfLines={1} >{item.lastMessage}</Text>
       </View>
-      <Icon name="chevron-forward-outline" size={20} color="#b2b2b2" />
+      {/* <Icon name="chevron-forward-outline" size={20} color="#b2b2b2" /> */}
     </View>
   )
 }
