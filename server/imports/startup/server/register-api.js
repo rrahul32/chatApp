@@ -3,3 +3,4 @@
 import '../../api/Chat/methods';
 import '../../api/Chat/publications';
 import '../../api/ChatMessages/methods';
+import '../../api/Users/methods';
