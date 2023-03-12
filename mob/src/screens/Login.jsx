@@ -5,64 +5,37 @@
  * @format
  */
 
-import Meteor, { Mongo, withTracker } from '@meteorrn/core';
+import Meteor from '@meteorrn/core';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-
-Meteor.connect("ws://192.168.1.16:3000/websocket");
 
 export default function Login({onLoggedIn}){
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const handleSendOtp = () => {
-    Meteor.call('phone.verify', phoneNumber, (error) => {
+    Meteor.call('sendVerificationCode', "+91" + phoneNumber, (error) => {
       if (error) {
         alert(error.error);
       } else {
         // console.log("true");
-        Meteor.call('otp.send', (error) => {
-          if (error) {
-            alert(error.error);
-          } else {
-            // console.log("true");
-            setShowOtpInput(true);
-          }
-        });
-
+        setShowOtpInput(true);
       }
     });
-
   }
 
   const handleLogin = () => {
-    Meteor.call('otp.verify', otp, (err, data) => {
-      if(err)
-      {
-       alert(err.error)
+    Meteor._login({
+      ['phone']: {
+        phone: '+91' + phoneNumber,
+        code: otp,
+        country: {name: 'India', dial_code: '+91', code: 'IN', key: 5},
       }
-      else{
-        if(data)
-        {
-          onLoggedIn();
-          // alert("dd")
-        }
-        else
-        {
-          alert("Failed");
-        }
+    }, (error) => {
+      if (error) {
+        alert(error.reason);
       }
     });
-      
-
-    // Here you can implement your logic to verify the OTP and login the user
-    // try {
-    //   await Auth.confirmSignIn(otp);
-    //   console.log('User is logged in');
-    //   // Navigate to the home screen or the next screen after login
-    // } catch (error) {
-    //   console.log('Error verifying OTP: ', error);
-    // }
   }
 
   return (

@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet, FlatList,SafeAreaView } from 'react-native';
-import Header from '../../components/Header';
+import { StyleSheet, FlatList,SafeAreaView, View } from 'react-native';
+
+// import Header from '../../components/Header';
 import ChatHead from '../../components/ChatHead';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ChatWindow from './ChatWindow';
+
 
 const DATA = [
   {
@@ -44,37 +43,20 @@ const DATA = [
   },
 ];
 
-function HomePage() {
-  const renderItem = ({ item }) => (
-    <ChatHead item={item}/>
-  );
+const renderItem = ({ item }) => (
+  <ChatHead item={item}/>
+);
 
+
+export default function Home() {
   return (
-    <SafeAreaView style={styles.container}>
-        <Header title="ChatApp" imageUrl="https://i.pravatar.cc/" />
-        {/* <HeaderNew /> */}
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-    </SafeAreaView>
+    <FlatList
+      data={DATA}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      style={styles.list}
+    />
   );
-}
-
-
-
-export default function Home(){
-  const Stack= createNativeStackNavigator();
-  return(
-    <NavigationContainer>
-      <Stack.Navigator>
-      <Stack.Screen name='Home' component={HomePage}/>
-      <Stack.Screen name='Chat' component={ChatWindow}/>
-      </Stack.Navigator>
-  </NavigationContainer>
-    )
 }
 
 const styles = StyleSheet.create({
@@ -86,4 +68,4 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-    });    
+});    
