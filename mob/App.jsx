@@ -5,7 +5,7 @@ import ChatWindow from './src/screens/auth/ChatWindow';
 import Login from './src/screens/Login';
 
 const App = () => {
-  const [loginStatus, setLoginStatus] = useState(true);
+  const [loginStatus, setLoginStatus] = useState(false);
   function handleLogin(){
     setLoginStatus(true);
   }

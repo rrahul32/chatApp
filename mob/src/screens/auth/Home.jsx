@@ -2,6 +2,9 @@ import React from 'react';
 import { StyleSheet, FlatList,SafeAreaView } from 'react-native';
 import Header from '../../components/Header';
 import ChatHead from '../../components/ChatHead';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ChatWindow from './ChatWindow';
 
 const DATA = [
   {
@@ -41,7 +44,7 @@ const DATA = [
   },
 ];
 
-export default function Home() {
+function HomePage() {
   const renderItem = ({ item }) => (
     <ChatHead item={item}/>
   );
@@ -58,6 +61,20 @@ export default function Home() {
       />
     </SafeAreaView>
   );
+}
+
+
+
+export default function Home(){
+  const Stack= createNativeStackNavigator();
+  return(
+    <NavigationContainer>
+      <Stack.Navigator>
+      <Stack.Screen name='Home' component={HomePage}/>
+      <Stack.Screen name='Chat' component={ChatWindow}/>
+      </Stack.Navigator>
+  </NavigationContainer>
+    )
 }
 
 const styles = StyleSheet.create({
