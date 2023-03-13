@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Meteor from '@meteorrn/core';
+import {launchImageLibrary} from 'react-native-image-picker';
 
-const ProfileUpdate = ({navigation}) => {
+const ProfileUpdate = () => {
   const [name, setName] = useState('');
   const [image, setImage] = useState('https://via.placeholder.com/150');
 
@@ -11,23 +12,48 @@ const ProfileUpdate = ({navigation}) => {
     // handle updating user profile data
     console.log("🚀 ~ file: profileUpdate.jsx:13 ~ handleUpdate ~ setName:", name);
     Meteor.call("updateProfileDetails", {
-        name: name
+        name: name,
+        profilePic: image
     }, (error) => {
         if (error) {
             alert(error.reason);
         } else {
             alert("Profile updated successfully");
-            navigation.navigate('Home');
+            // navigation.navigate('Home');
         }
     })
   }
 
+  const handleImageChange = ()=>{
+    const options = {
+      title: 'Select Profile Picture',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    // console.log(ImagePicker)
+    launchImageLibrary(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const source = { uri: response.assets[0].uri };
+        setImage(source.uri);
+      }
+    });
+  }
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.imageWrapper} onPress={() => console.log('change image')}>
+      <TouchableOpacity style={styles.imageWrapper} onPress={handleImageChange}>
         <Image style={styles.image} source={{ uri: image }} />
         <View style={styles.editIconWrapper}>
-            <Icon style={styles.editIcon} name='edit'/>
+            <Icon style={styles.editIcon} name='edit' />
         </View>
       </TouchableOpacity>
       <Text style={styles.heading}>Edit Profile</Text>
@@ -38,6 +64,7 @@ const ProfileUpdate = ({navigation}) => {
           value={name}
           onChangeText={text => setName(text)}
           placeholder="Enter your name"
+          placeholderTextColor={"#666"}
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleUpdate}>
@@ -73,14 +100,14 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   editIcon: {
-    width: 20,
-    height: 20,
-    flex: 1
+    flex: 1,
+    color: 'black'
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: "#000"
   },
   inputWrapper: {
     width: '100%',
@@ -89,6 +116,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 5,
     fontWeight: 'bold',
+    color: '#000',
   },
   input: {
     borderWidth: 1,
@@ -96,6 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     width: '100%',
+    color: 'black'
   },
   button: {
     backgroundColor: '#1e88e5',

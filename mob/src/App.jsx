@@ -8,7 +8,7 @@ import Login from "./screens/Login";
 import Home from "./screens/auth/Home";
 import ProfileUpdate from "./screens/auth/profileUpdate";
 
-Meteor.connect("ws://192.168.1.16:3000/websocket");
+Meteor.connect("ws://192.168.50.154:3000/websocket");
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +26,7 @@ const renderUI = (user) => {
         />
       )}}>
         <Stack.Screen name="Home" component={Home}/>
-        <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} />
+        {/* <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} /> */}
       </Stack.Group>
     );
   } else {
