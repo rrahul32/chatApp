@@ -12,8 +12,10 @@ import Icon from 'react-native-vector-icons/Feather';
 import Meteor from '@meteorrn/core';
 import {launchImageLibrary} from 'react-native-image-picker';
 import ImageEditor from '@react-native-community/image-editor';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const ProfileUpdate = () => {
+  // console.log(Meteor.user());
   const [name, setName] = useState('');
   const [image, setImage] = useState('https://via.placeholder.com/150');
   // const [image, setImage] = useState('"file://'+RNFS.DocumentDirectoryPath + '/profile.jpg');
@@ -24,11 +26,32 @@ const ProfileUpdate = () => {
       '🚀 ~ file: profileUpdate.jsx:13 ~ handleUpdate ~ setName:',
       name,
     );
+    RNFetchBlob.fs
+              .readFile(image, 'base64')
+              .then(data => {
+                const base64Image = `data:image/jpeg;base64,${data}`;
+                // Do something with the base64Image data
+                // console.log("base64: "+base64Image);
+                // const user= Meteor.user();
+                Meteor.call('uploadProfileImage', {image: base64Image, type: 'image/jpeg'}, (error)=>{
+                  if(error)
+                  {
+                    console.log(error)
+                  }
+                  else
+                  {
+                    console.log('upload successful');
+                  }
+                })
+
+              })
+              .catch(error => {
+                console.error(error);
+              });
     Meteor.call(
       'updateProfileDetails',
       {
         name: name,
-        profilePic: image,
       },
       error => {
         if (error) {
@@ -73,15 +96,12 @@ const ProfileUpdate = () => {
         // console.log('ImageEditor: ', ImageEditor);
 
         ImageEditor.cropImage(source.uri, cropData).then(url => {
-          if(url)
-          {
+          if (url) {
             // console.log('Cropped image uri', url);
             setImage(url);
-            Meteor.call()
+            
           }
-
         });
-
       }
     });
   };
