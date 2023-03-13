@@ -45,7 +45,6 @@ export const updateProfileDetails = new ValidatedMethod({
   validate: new SimpleSchema({
     name: {
       type: String,
-      optional: true
     },
     // country: {
     //   type: countrySchema,
