@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Meteor from '@meteorrn/core';
@@ -22,32 +21,37 @@ const ProfileUpdate = () => {
 
   const handleUpdate = () => {
     // handle updating user profile data
+    if (name == null || name == '') {
+      alert('Please enter your name.');
+      return;
+    }
     console.log(
       '🚀 ~ file: profileUpdate.jsx:13 ~ handleUpdate ~ setName:',
       name,
     );
-    RNFetchBlob.fs
-              .readFile(image, 'base64')
-              .then(data => {
-                const base64Image = `data:image/jpeg;base64,${data}`;
-                // Do something with the base64Image data
-                // console.log("base64: "+base64Image);
-                // const user= Meteor.user();
-                Meteor.call('uploadProfileImage', {image: base64Image, type: 'image/jpeg'}, (error)=>{
-                  if(error)
-                  {
-                    console.log(error)
-                  }
-                  else
-                  {
-                    console.log('upload successful');
-                  }
-                })
-
-              })
-              .catch(error => {
-                console.error(error);
-              });
+    if (image != 'https://via.placeholder.com/150')
+      RNFetchBlob.fs
+        .readFile(image, 'base64')
+        .then(data => {
+          const base64Image = `data:image/jpeg;base64,${data}`;
+          // Do something with the base64Image data
+          // console.log("base64: "+base64Image);
+          // const user= Meteor.user();
+          Meteor.call(
+            'uploadProfileImage',
+            {image: base64Image, type: 'image/jpeg'},
+            error => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('upload successful');
+              }
+            },
+          );
+        })
+        .catch(error => {
+          console.error(error);
+        });
     Meteor.call(
       'updateProfileDetails',
       {
@@ -99,7 +103,6 @@ const ProfileUpdate = () => {
           if (url) {
             // console.log('Cropped image uri', url);
             setImage(url);
-            
           }
         });
       }
