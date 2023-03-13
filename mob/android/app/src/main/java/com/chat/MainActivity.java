@@ -1,10 +1,15 @@
 package com.chat;
 
+import java.util.List;
+import com.facebook.react.ReactPackage;
+import java.util.Arrays;
+import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import android.os.Bundle;
+import com.rnfs.RNFSPackage; 
 
 public class MainActivity extends ReactActivity {
 
@@ -39,4 +44,11 @@ protected void onCreate(Bundle savedInstanceState) {
         DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
         );
   }
+
+    protected List<ReactPackage> getPackages() {
+      return Arrays.<ReactPackage>asList(
+        new MainReactPackage(), // <---- add comma
+        new RNFSPackage() // <---------- add package
+      );
+    }
 }

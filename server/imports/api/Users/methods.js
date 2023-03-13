@@ -46,9 +46,9 @@ export const updateProfileDetails = new ValidatedMethod({
     name: {
       type: String,
     },
-    profilePic: {
-      type: String,
-    },
+    // profilePic: {
+    //   type: String,
+    // },
     // country: {
     //   type: countrySchema,
     //   optional: true
@@ -64,11 +64,11 @@ export const updateProfileDetails = new ValidatedMethod({
           "profile.name": data.name
         };
       }
-      if (data.profilePic) {
-        Object.assign(query, {
-          "profile.pic": data.profilePic
-        });
-      }
+      // if (data.profilePic) {
+      //   Object.assign(query, {
+      //     "profile.pic": data.profilePic
+      //   });
+      // }
       Meteor.users.update({
         _id: thisUser._id
       }, {
