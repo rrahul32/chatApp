@@ -6,10 +6,40 @@ import Meteor, { Mongo, withTracker } from '@meteorrn/core';
 
 import Login from "./screens/Login";
 import Home from "./screens/auth/Home";
+import ProfileUpdate from "./screens/auth/profileUpdate";
 
 Meteor.connect("ws://192.168.1.16:3000/websocket");
 
 const Stack = createNativeStackNavigator();
+
+const renderUI = (user) => {
+  if (!user) {
+    return (
+      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+    );
+  } else if (user.profile && user.profile.name) {
+    return (
+      <Stack.Group screenOptions={{headerRight: () => (
+        <Button
+          onPress={() => Meteor.logout()}
+          title="Logout"
+        />
+      )}}>
+        <Stack.Screen name="Home" component={Home}/>
+        <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} />
+      </Stack.Group>
+    );
+  } else {
+    return (
+      <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} options={{headerRight: () => (
+        <Button
+          onPress={() => Meteor.logout()}
+          title="Logout"
+        />
+      )}}/>
+    );
+  }
+};
 
 function App(props) {
   const {user, loading} = props;
@@ -17,16 +47,7 @@ function App(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {user ? (
-          <Stack.Screen name="Home" component={Home} options={{ headerShown: true, headerRight: () => (
-            <Button
-              onPress={() => Meteor.logout()}
-              title="Logout"
-            />
-          ) }}/>
-        ) : (
-          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-        )}
+        {renderUI(user)}
       </Stack.Navigator>
     </NavigationContainer>
   );
