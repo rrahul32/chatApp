@@ -9,9 +9,9 @@ import ChatMessages from "./";
 import { incrementChatCount } from "../Chat/modules";
 
 export const createChatMessage = (chatId, userId, message) => {
-  console.log("chatId: ",chatId);
-  console.log("userId: ",userId);
-  console.log("message: ",message);
+  // console.log("chatId: ",chatId);
+  // console.log("userId: ",userId);
+  // console.log("message: ",message);
   return new Promise((resolve, reject) => { // eslint-disable-line no-undef
     const chatMessageId = ChatMessages.insert({
       chatId,
