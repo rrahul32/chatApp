@@ -16,28 +16,28 @@ import ProfileImages from "./ProfileImages";
 let contactSchema = new SimpleSchema({
   formattedPhoneNumber: {
     type: String,
-    optional: true
+    optional: true,
   },
   email: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 });
 
 const countrySchema = new SimpleSchema({
-  "key": {
+  key: {
     type: Number,
-    optional: true
+    optional: true,
   },
-  "name": {
-    type: String
+  name: {
+    type: String,
   },
-  "dial_code": {
-    type: String
+  dial_code: {
+    type: String,
   },
-  "code": {
-    type: String
-  }
+  code: {
+    type: String,
+  },
 });
 
 export const updateProfileDetails = new ValidatedMethod({
@@ -55,13 +55,13 @@ export const updateProfileDetails = new ValidatedMethod({
     // }
   }).validator(),
   run(data) {
-    console.log(data)
+    console.log(data);
     const thisUser = Meteor.user();
     if (thisUser) {
       let query;
       if (data.name) {
         query = {
-          "profile.name": data.name
+          "profile.name": data.name,
         };
       }
       // if (data.profilePic) {
@@ -69,28 +69,33 @@ export const updateProfileDetails = new ValidatedMethod({
       //     "profile.pic": data.profilePic
       //   });
       // }
-      Meteor.users.update({
-        _id: thisUser._id
-      }, {
-        $set: query
-      });
+      Meteor.users.update(
+        {
+          _id: thisUser._id,
+        },
+        {
+          $set: query,
+        }
+      );
       return true;
     } else {
-      throw new Meteor.Error(errorMessages.forbidden, errorMessages.nullUserMessage);
+      throw new Meteor.Error(
+        errorMessages.forbidden,
+        errorMessages.nullUserMessage
+      );
     }
-  }
+  },
 });
-
 
 export const getContactList = new ValidatedMethod({
   name: "getContactList",
   validate: new SimpleSchema({
     contacts: {
-      type: Array
+      type: Array,
     },
     "contacts.$": {
-      type: contactSchema
-    }
+      type: contactSchema,
+    },
   }).validator(),
   run(contactData) {
     const thisUser = Meteor.user();
@@ -103,9 +108,9 @@ export const getContactList = new ValidatedMethod({
             phone: {
               $elemMatch: {
                 number: contact.formattedPhoneNumber,
-                verified: true
-              }
-            }
+                verified: true,
+              },
+            },
           });
         }
         if (contact && contact.email) {
@@ -113,9 +118,9 @@ export const getContactList = new ValidatedMethod({
             emails: {
               $elemMatch: {
                 address: contact.email,
-                verified: true
-              }
-            }
+                verified: true,
+              },
+            },
           });
         }
         // const contactUserData = Meteor.users.findOne({
@@ -146,45 +151,61 @@ export const getContactList = new ValidatedMethod({
         // });
 
         const query = {
-          $or: orQuery
+          $or: orQuery,
         };
         const contactUserData = Meteor.users.findOne(query);
         if (contactUserData && contactUserData._id !== thisUser._id) {
-          const existingContactListUser = contactList.find((item) => item.user === contactUserData._id);
+          const existingContactListUser = contactList.find(
+            (item) => item.user === contactUserData._id
+          );
           let picture = null;
-          if (contactUserData.profile && contactUserData.profile.image && contactUserData.profile.image.id) {
+          if (
+            contactUserData.profile &&
+            contactUserData.profile.image &&
+            contactUserData.profile.image.id
+          ) {
             picture = ProfileImages.findOne({
-              _id: contactUserData.profile.image.id
+              _id: contactUserData.profile.image.id,
             }).link();
           }
           if (existingContactListUser && contact.formattedPhoneNumber) {
-            const index = contactList.findIndex(eachItem => eachItem.user === existingContactListUser.user);
-            contactList[index].formattedPhoneNumber = contact.formattedPhoneNumber;
+            const index = contactList.findIndex(
+              (eachItem) => eachItem.user === existingContactListUser.user
+            );
+            contactList[index].formattedPhoneNumber =
+              contact.formattedPhoneNumber;
           } else if (existingContactListUser && contact.email) {
-            const index = contactList.findIndex(eachItem => eachItem.user === existingContactListUser.user);
+            const index = contactList.findIndex(
+              (eachItem) => eachItem.user === existingContactListUser.user
+            );
             contactList[index].email = contact.email;
           } else {
             contactList.push({
               user: contactUserData._id,
               name: contactUserData.profile.name,
               picture: picture,
-              formattedPhoneNumber: contact.formattedPhoneNumber ? contact.formattedPhoneNumber : null,
-              email: contact.email ? contact.email : null
+              formattedPhoneNumber: contact.formattedPhoneNumber
+                ? contact.formattedPhoneNumber
+                : null,
+              email: contact.email ? contact.email : null,
             });
           }
         }
       });
       return contactList;
     } else {
-      throw new Meteor.Error(errorMessages.forbidden, errorMessages.nullUserMessage);
+      throw new Meteor.Error(
+        errorMessages.forbidden,
+        errorMessages.nullUserMessage
+      );
     }
-  }
+  },
 });
 
 function removeProfileImageData(imageId) {
   if (imageId) {
     return ProfileImages.remove({
-      _id: imageId
+      _id: imageId,
     });
   }
   return false;
@@ -193,56 +214,66 @@ function removeProfileImageData(imageId) {
 function deleteProfileImage(user) {
   if (user.profile && user.profile.image && user.profile.image.id) {
     removeProfileImageData(user.profile.image.id);
-    return Meteor.users.update({
-      _id: user._id
-    }, {
-      $set: {
-        "profile.image": {}
+    return Meteor.users.update(
+      {
+        _id: user._id,
+      },
+      {
+        $set: {
+          "profile.image": {},
+        },
       }
-    });
+    );
   }
   return false;
 }
 
 function updateProfileImageId(userId, profileImageId) {
-  return Meteor.users.update({
-    _id: userId
-  }, {
-    $set: {
-      "profile.image": {
-        id: profileImageId,
-        url: ProfileImages.findOne({
-          _id: profileImageId
-        }).link()
-      }
+  return Meteor.users.update(
+    {
+      _id: userId,
+    },
+    {
+      $set: {
+        "profile.image": {
+          id: profileImageId,
+          url: ProfileImages.findOne({
+            _id: profileImageId,
+          }).link(),
+        },
+      },
     }
-  });
+  );
 }
 
 function updateProfileImage(user, image, type) {
   deleteProfileImage(user);
-  ProfileImages.write(new Buffer(image, "base64"), {
-    fileName: user._id + ".jpg",
-    type: type,
-    userId: user._id
-  }, function(error, fileRef) {
-    if (error) {
-      throw error;
-    } else {
-      updateProfileImageId(user._id, fileRef._id);
+  ProfileImages.write(
+    new Buffer(image, "base64"),
+    {
+      fileName: user._id + ".jpg",
+      type: type,
+      userId: user._id,
+    },
+    function (error, fileRef) {
+      if (error) {
+        throw error;
+      } else {
+        updateProfileImageId(user._id, fileRef._id);
+      }
     }
-  });
+  );
 }
 
 export const uploadProfileImage = new ValidatedMethod({
   name: "uploadProfileImage",
   validate: new SimpleSchema({
     image: {
-      type: String
+      type: String,
     },
     type: {
-      type: String
-    }
+      type: String,
+    },
   }).validator(),
   run(data) {
     const thisUser = Meteor.user();
@@ -252,9 +283,12 @@ export const uploadProfileImage = new ValidatedMethod({
       }
       return true;
     } else {
-      throw new Meteor.Error(errorMessages.forbidden, errorMessages.nullUserMessage);
+      throw new Meteor.Error(
+        errorMessages.forbidden,
+        errorMessages.nullUserMessage
+      );
     }
-  }
+  },
 });
 
 export const removeProfileImage = new ValidatedMethod({
@@ -266,9 +300,12 @@ export const removeProfileImage = new ValidatedMethod({
       deleteProfileImage(thisUser);
       return true;
     } else {
-      throw new Meteor.Error(errorMessages.forbidden, errorMessages.nullUserMessage);
+      throw new Meteor.Error(
+        errorMessages.forbidden,
+        errorMessages.nullUserMessage
+      );
     }
-  }
+  },
 });
 
 export const updateDeviceInfo = new ValidatedMethod({
@@ -276,37 +313,46 @@ export const updateDeviceInfo = new ValidatedMethod({
   validate: new SimpleSchema({
     deviceInfo: {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
-  run({deviceInfo}) {
+  run({ deviceInfo }) {
     const thisUser = Meteor.user();
     if (thisUser) {
       deviceInfo.updatedAt = new Date();
       if (deviceInfo.oneSignalId) {
-        Meteor.users.update({}, {
-          $pull: {
-            deviceInfo: {
-              os: deviceInfo.os,
-              oneSignalId: deviceInfo.oneSignalId
-            }
-          }
-        },
+        Meteor.users.update(
+          {},
           {
-            multi: true
-          });
+            $pull: {
+              deviceInfo: {
+                os: deviceInfo.os,
+                oneSignalId: deviceInfo.oneSignalId,
+              },
+            },
+          },
+          {
+            multi: true,
+          }
+        );
       }
-      return Meteor.users.update({
-        _id: thisUser._id
-      }, {
-        $set: {
-          "deviceInfo": [deviceInfo]
+      return Meteor.users.update(
+        {
+          _id: thisUser._id,
+        },
+        {
+          $set: {
+            deviceInfo: [deviceInfo],
+          },
         }
-      });
+      );
     } else {
-      throw new Meteor.Error(errorMessages.forbidden, errorMessages.nullUserMessage);
+      throw new Meteor.Error(
+        errorMessages.forbidden,
+        errorMessages.nullUserMessage
+      );
     }
-  }
+  },
 });
 
 export const removePushSubscription = new ValidatedMethod({
@@ -315,17 +361,53 @@ export const removePushSubscription = new ValidatedMethod({
   run() {
     const thisUser = Meteor.user();
     if (thisUser) {
-      return Meteor.users.update({
-        _id: thisUser._id
-      }, {
-        $set: {
-          "deviceInfo": []
+      return Meteor.users.update(
+        {
+          _id: thisUser._id,
+        },
+        {
+          $set: {
+            deviceInfo: [],
+          },
         }
-      });
+      );
     } else {
-      throw new Meteor.Error(errorMessages.forbidden, errorMessages.nullUserMessage);
+      throw new Meteor.Error(
+        errorMessages.forbidden,
+        errorMessages.nullUserMessage
+      );
     }
-  }
+  },
+});
+
+export const findUsers = new ValidatedMethod({
+  name: "findUsers",
+  validate: new SimpleSchema({
+    number: {
+      type: String,
+    },
+  }).validator(),
+  run(data) {
+
+      // const regex = new RegExp("+91" + data, "i"); // create a regular expression to match the search query
+
+      const results = Meteor.users.find(
+        {
+          _id: { $ne: Meteor.user()._id },
+          "profile.number": { $eq: '+91'+data.number }, // search for phone numbers that match the search query
+        },
+        {
+          fields: {
+            // specify the fields to include in the result
+            _id: 1,
+            "profile.name": 1,
+            "profile.number": 1,
+          },
+        }
+      ).fetch();
+      console.log(results);
+      return results;
+  },
 });
 
 rateLimit({
@@ -334,8 +416,9 @@ rateLimit({
     uploadProfileImage,
     removeProfileImage,
     updateDeviceInfo,
-    getContactList
+    getContactList,
+    findUsers,
   ],
   limit: 100,
-  timeRange: 1000
+  timeRange: 1000,
 });

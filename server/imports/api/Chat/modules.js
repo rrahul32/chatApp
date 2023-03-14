@@ -20,7 +20,6 @@ export const createChat = (id, userId) => {
           unReadCount: 0
         }
       ],
-      orderId: orderId
     });
     if (chatId) {
       resolve(chatId);
