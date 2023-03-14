@@ -27,6 +27,8 @@ const SearchUsers = () => {
     //     user.name.toLowerCase().includes(text.toLowerCase()) ||
     //     user.phone.includes(text)
     // );
+    // console.log(text.length);
+    if(text.length>=10)
     Meteor.call('findUsers', {number: text}, (error,result)=>{
       if(error)
       console.log(error);
@@ -41,6 +43,7 @@ const SearchUsers = () => {
   const handleStartChat = (userId) => {
     // Code to start chat with user
     console.log('Starting chat with user:', userId);
+
   };
 
   const renderItem = ({ item }) => (
