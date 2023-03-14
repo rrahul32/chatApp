@@ -38,7 +38,7 @@ publishComposite("chat", function() {
         }, {
           find(chatData) {
             return Meteor.users.find({
-              _id: chatData.participants.map(item => item._id)
+              _id: {$in: chatData.participants.map(item => item.id)}
             }, {
               fields: {
                 profile: 1

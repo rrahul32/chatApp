@@ -16,7 +16,7 @@ import Meteor from '@meteorrn/core';
 //   { id: '4', name: 'Sarah Lee', phone: '555-4321' },
 // ];
 
-const SearchUsers = () => {
+const AddChat = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
@@ -43,6 +43,18 @@ const SearchUsers = () => {
   const handleStartChat = (userId) => {
     // Code to start chat with user
     console.log('Starting chat with user:', userId);
+
+    Meteor.call('createChat', {userId: userId}, (error,result)=>{
+      if(error)
+      console.log(error);
+      else{
+        console.log(result);
+        navigation.navigate('Chat Window',{
+          chatId: result
+        })
+      }
+    }
+    )
 
   };
 
@@ -115,4 +127,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchUsers;
+export default AddChat;

@@ -36,11 +36,11 @@ const chatMessagesSchema = new SimpleSchema({
     label: "text content of message",
     optional: true
   },
-  "image": {
-    type: imageSchema,
-    label: "Image content of the message",
-    optional: true
-  },
+  // "image": {
+  //   type: imageSchema,
+  //   label: "Image content of the message",
+  //   optional: true
+  // },
   "createdBy": {
     type: userSchema,
     label: "sender of the message"

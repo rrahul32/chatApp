@@ -9,6 +9,7 @@ import Login from "./screens/Login";
 import Home from "./screens/auth/Home";
 import ProfileUpdate from "./screens/auth/profileUpdate";
 import AddChat from "./screens/auth/AddChat";
+import ChatWindow from './screens/auth/ChatWindow';
 
 Meteor.connect("ws://192.168.87.154:3000/websocket");
 
@@ -38,6 +39,7 @@ const renderUI = (user) => {
         />
 
         <Stack.Screen name="Add Chat" component={AddChat}/>
+        <Stack.Screen name="Chat Window" component={ChatWindow}/>
         {/* <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} /> */}
       </Stack.Group>
     );

@@ -28,7 +28,17 @@ export const createChat = (id, userId) => {
     }
   });
 };
-
+const getChatDetails= (chatId)=>{
+  return new Promise((resolve,reject)=>{
+    const chatDetails = Chat.findOne({_id: {$eq: chatId}});
+    if(chatDetails){
+      resolve(chatDetails)
+    }
+    else{
+      reject(false);
+    }
+  });
+}
 export const incrementChatCount = (chatId, senderUserId) => {
   getChatDetails(chatId).then((thisChat) => {
     let otherParticipants = thisChat.participants.filter(eachParticipant => !(eachParticipant.id === senderUserId));
