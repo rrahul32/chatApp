@@ -5,9 +5,8 @@ import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
 
 const ChatMessages = new Mongo.Collection('chatMessages');
-const ChatWindow = ({chatId, loading, messages}) => {
+const ChatWindow = ({chatId, loading, messages, userId}) => {
   if (loading) return;
-  const userId = Meteor.user()._id;
   console.log('userId: ', userId);
   // console.log('messages: ' + messages);
   const chatMessages = messages.map(message => {
@@ -16,7 +15,7 @@ const ChatWindow = ({chatId, loading, messages}) => {
       text: message.text,
       createdAt: message.createdAt,
       user: {
-        _id: userId,
+        _id: message.createdBy.id,
       },
     };
   });
@@ -83,7 +82,7 @@ const ChatWindow = ({chatId, loading, messages}) => {
       renderAvatar={() => null}
       renderMessage={renderMessage}
       inverted={false}
-      isLoadingEarlier={false}
+      
     />
     // </View>
   );
@@ -104,9 +103,11 @@ export default withTracker(({route, navigation}) => {
   const handle = Meteor.subscribe('chatMessages', chatId);
   const ready = handle.ready();
   const messages = ChatMessages.find().fetch();
+  const userId = Meteor.user()._id;
   return {
     chatId,
     loading: !ready,
     messages,
+    userId
   };
 })(ChatWindow);
