@@ -6,7 +6,7 @@ import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import ChatHead from '../../components/ChatHead';
 
 const Chat = new Mongo.Collection('chat');
-const Users = new Mongo.Collection('users');
+// const Users = new Mongo.Collection('users');
 const ChatMessages = new Mongo.Collection('chatMessages');
 // const DATA = [
 //   {
@@ -16,40 +16,12 @@ const ChatMessages = new Mongo.Collection('chatMessages');
 //     time: '10:30 AM',
 //     image: 'https://i.pravatar.cc/300?img=1',
 //   },
-//   {
-//     id: '2',
-//     name: 'Bob',
-//     lastMessage: 'I have a question for you',
-//     time: '9:45 AM',
-//     image: 'https://i.pravatar.cc/300?img=2',
-//   },
-//   {
-//     id: '3',
-//     name: 'Charlie',
-//     lastMessage: 'Have you seen the news?',
-//     time: 'Yesterday',
-//     image: 'https://i.pravatar.cc/300?img=3',
-//   },
-//   {
-//     id: '4',
-//     name: 'David',
-//     lastMessage: 'Can you help me with something?',
-//     time: 'Yesterday',
-//     image: 'https://i.pravatar.cc/300?img=4',
-//   },
-//   {
-//     id: '6',
-//     name: 'Eve',
-//     lastMessage: 'Thanks for yesterday!',
-//     time: 'Yesterday',
-//     image: 'https://i.pravatar.cc/300?img=6',
-//   },
-// ];
-
+//]
 
 
 function Home({ready, chatData, chatMessages, users, navigation}) {
   if (!ready) return;
+  // console.log("user: ",users[0]);
   const renderItem = ({ item }) => {
     // console.log(item);
     const currentChatMessages = chatMessages.filter(

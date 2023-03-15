@@ -11,7 +11,7 @@ import ProfileUpdate from "./screens/auth/profileUpdate";
 import AddChat from "./screens/auth/AddChat";
 import ChatWindow from './screens/auth/ChatWindow';
 
-Meteor.connect("ws://192.168.87.154:3000/websocket");
+Meteor.connect("ws://192.168.1.2:3000/websocket");
 
 const Stack = createNativeStackNavigator();
 

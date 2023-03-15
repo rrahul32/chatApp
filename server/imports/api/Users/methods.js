@@ -229,6 +229,7 @@ function deleteProfileImage(user) {
 }
 
 function updateProfileImageId(userId, profileImageId) {
+  // console.log(process.env.INIT_CWD);
   return Meteor.users.update(
     {
       _id: userId,
@@ -249,7 +250,7 @@ function updateProfileImageId(userId, profileImageId) {
 function updateProfileImage(user, image, type) {
   deleteProfileImage(user);
   ProfileImages.write(
-    new Buffer(image, "base64"),
+    new Buffer.from(image, "base64"),
     {
       fileName: user._id + ".jpg",
       type: type,
@@ -259,6 +260,7 @@ function updateProfileImage(user, image, type) {
       if (error) {
         throw error;
       } else {
+        // console.log("fileref: ", fileRef);
         updateProfileImageId(user._id, fileRef._id);
       }
     }

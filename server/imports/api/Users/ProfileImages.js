@@ -8,7 +8,7 @@
 import { FilesCollection } from "meteor/ostrio:files";
 
 const ProfileImages = new FilesCollection({
-  storagePath: process.env.PWD + "/uploads/profileImages",
+  storagePath: process.env.INIT_CWD + "/uploads/profileImages",
   collectionName: "profileImages"
 });
 

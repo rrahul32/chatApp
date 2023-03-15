@@ -1,7 +1,7 @@
 import {StyleSheet, Text, View, Image} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Meteor from '@meteorrn/core';
-
+import RNImgToBase64 from 'react-native-image-base64';
 // import Icon from 'react-native-ionicons';
 
 const ChatHead = ({item, currentChatMessages, currentChatUsers}) => {
@@ -12,11 +12,27 @@ const ChatHead = ({item, currentChatMessages, currentChatUsers}) => {
     user => user._id !== Meteor.user()._id,
   );
   // console.log('recepient: ', recepient);
+  const [base64Image, setBase64Image] = useState('https://via.placeholder.com/150');
+
+  // console.log("RNImgToBase64: ",RNImgToBase64.getBase64String);
+
+  console.log("currentChatUsers: ", currentChatUsers[1].profile.image.url);
+  // useEffect(() => {
+  //   const fetchImage = async () => {
+  //     try {
+  //       const base64 = await RNImgToBase64.getBase64String('http://192.168.1.2:3000/cdn/storage/profileImages/CdXhfigE3fKhfRJLT/original/CdXhfigE3fKhfRJLT.jpg');
+  //       setBase64Image(`data:image/png;base64,${base64}`);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchImage();
+  // }, []);
 
   return (
       <View style={styles.item}>
         <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
+          source={{uri: base64Image}}
           style={styles.avatar}
         />
         <View style={styles.itemContent}>
@@ -36,22 +52,22 @@ const ChatHead = ({item, currentChatMessages, currentChatUsers}) => {
         </View>
       </View>
   );
-  return (
-    <View style={styles.item}>
-      {/* <Image source={{ uri: item.image }} style={styles.avatar} /> */}
-      <View style={styles.itemContent}>
-        <View style={styles.itemHeader}>
-          <Text style={styles.itemName}>{recepient.profile.name}</Text>
-          <Text style={styles.itemTime}>{item.lastMessageAt.toString()}</Text>
-        </View>
-        {/* <Text style={styles.itemLastMessage} numberOfLines={1} >{item.lastMessage}</Text> */}
-        <Text style={styles.itemLastMessage} numberOfLines={1}>
-          nil
-        </Text>
-      </View>
-      {/* <Icon name="chevron-forward-outline" size={20} color="#b2b2b2" /> */}
-    </View>
-  );
+  // return (
+  //   <View style={styles.item}>
+  //     {/* <Image source={{ uri: item.image }} style={styles.avatar} /> */}
+  //     <View style={styles.itemContent}>
+  //       <View style={styles.itemHeader}>
+  //         <Text style={styles.itemName}>{recepient.profile.name}</Text>
+  //         <Text style={styles.itemTime}>{item.lastMessageAt.toString()}</Text>
+  //       </View>
+  //       {/* <Text style={styles.itemLastMessage} numberOfLines={1} >{item.lastMessage}</Text> */}
+  //       <Text style={styles.itemLastMessage} numberOfLines={1}>
+  //         nil
+  //       </Text>
+  //     </View>
+  //     {/* <Icon name="chevron-forward-outline" size={20} color="#b2b2b2" /> */}
+  //   </View>
+  // );
 };
 
 export default ChatHead;
