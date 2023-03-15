@@ -1,14 +1,18 @@
 import React, {useState, useEffect} from 'react';
 import {GiftedChat, Bubble} from 'react-native-gifted-chat';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, TouchableOpacity,Image, Text} from 'react-native';
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
-
+const Chat= new Mongo.Collection('chat');
+const Users= new Mongo.Collection('users');
 const ChatMessages = new Mongo.Collection('chatMessages');
-const ChatWindow = ({chatId, loading, messages, userId}) => {
+const ChatWindow = ({chatId, loading, messages, user, navigation}) => {
   if (loading) return;
   // console.log('userId: ', userId);
   // console.log('messages: ' + messages);
+  recepientId= Chat.findOne({_id: chatId}).participants.filter((p)=>(p.id!=user._id))[0].id;
+  recepientDetails= Users.findOne({_id:recepientId});
+  console.log("recepiecn: ", recepientDetails)
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [isAllLoaded, setIsAllLoaded] = useState(false);
   const [msgs, setMsgs]= useState([]);
@@ -36,6 +40,13 @@ const ChatWindow = ({chatId, loading, messages, userId}) => {
         },
       };
     }));
+
+    navigation.setOptions({headerTitle: ()=>(
+      <TouchableOpacity style={styles.containerHead}>
+          <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.avatar} />
+          <Text style={styles.title}>{recepientDetails.profile.name}</Text>
+        </TouchableOpacity>
+    )})
   }, [messages])
   
   // console.log("lat: ",chatMessages[chatMessages.length-1])
@@ -129,7 +140,7 @@ const ChatWindow = ({chatId, loading, messages, userId}) => {
       messages={msgs}
       onSend={newMessages => onSend(newMessages)}
       user={{
-        _id: userId,
+        _id: user._id,
       }}
       renderAvatar={() => null}
       renderMessage={renderMessage}
@@ -149,6 +160,23 @@ const styles = StyleSheet.create({
   input: {
     color: 'black',
   },
+  containerHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 0,
+    marginVertical: 0,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 10,
+    color: "black"
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
 });
 
 export default withTracker(({route, navigation}) => {
@@ -156,11 +184,12 @@ export default withTracker(({route, navigation}) => {
   const handle = Meteor.subscribe('chatMessages', chatId);
   const ready = handle.ready();
   const messages = ChatMessages.find({},{sort: {createdAt: -1}, limit: 13}).fetch();
-  const userId = Meteor.user()._id;
+  const user = Meteor.user();
   return {
     chatId,
     loading: !ready,
     messages,
-    userId
+    user,
+    navigation
   };
 })(ChatWindow);

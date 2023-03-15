@@ -16,7 +16,7 @@ const ChatHead = ({item, currentChatMessages, currentChatUsers}) => {
 
   // console.log("RNImgToBase64: ",RNImgToBase64.getBase64String);
 
-  console.log("currentChatUsers: ", currentChatUsers[1].profile.image.url);
+  // console.log("currentChatUsers: ", currentChatUsers[1].profile.image.url);
   // useEffect(() => {
   //   const fetchImage = async () => {
   //     try {
