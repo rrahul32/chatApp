@@ -122,8 +122,8 @@ const ChatWindow = ({chatId, loading, messages, userId}) => {
   }
 
   return (
-    // <View style={styles.container}>
-    //   <ChatWindowHeader name="Native" avatar='https://placeimg.com/140/140/any' />
+    <View style={styles.container}>
+      {/* <ChatWindowHeader name="Native" avatar='https://placeimg.com/140/140/any' /> */}
     <GiftedChat
       textInputStyle={styles.input}
       messages={msgs}
@@ -137,7 +137,7 @@ const ChatWindow = ({chatId, loading, messages, userId}) => {
       onLoadEarlier={onLoadEarlier}
       isLoadingEarlier={isLoadingEarlier}
     />
-    // </View>
+    </View>
   );
 };
 
