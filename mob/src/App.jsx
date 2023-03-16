@@ -26,12 +26,7 @@ const renderUI = (user) => {
     );
   } else if (user.profile && user.profile.name) {
     return (
-      <Stack.Group screenOptions={{headerRight: () => (
-        <Button
-          onPress={() => Meteor.logout()}
-          title="Logout"
-        />
-      ),}}>
+      <Stack.Group >
         <Stack.Screen name="Home" component={Home} options={(props)=>({headerRight: ()=> (
         <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 10}}>
         <TouchableOpacity
@@ -54,7 +49,10 @@ const renderUI = (user) => {
         />
 
         <Stack.Screen name="Add Chat" component={AddChat} />
-        <Stack.Screen name="Chat Window" component={ChatWindow} />
+        <Stack.Screen name="Chat Window" component={ChatWindow} options={{headerRight: ()=>(<TouchableOpacity
+        >
+          <Icon name="settings" size={30} color="black"/>
+        </TouchableOpacity>)}}/>
         <Stack.Screen name="Settings" component={AppSettings}/>
         {/* <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} /> */}
       </Stack.Group>

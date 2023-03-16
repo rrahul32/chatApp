@@ -63,6 +63,7 @@ const AddChat = ({navigation}) => {
       style={styles.resultItem}
       onPress={() => handleStartChat(item._id)}
     >
+      {console.log("item: ",item)}
       <Text style={styles.resultName}>{item.profile.name}</Text>
       <Text style={styles.resultPhone}>{item.profile.number}</Text>
       <Text style={styles.resultButton}>Start Chat</Text>

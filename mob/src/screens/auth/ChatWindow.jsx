@@ -12,7 +12,7 @@ const ChatWindow = ({chatId, loading, messages, user, navigation}) => {
   // console.log('messages: ' + messages);
   recepientId= Chat.findOne({_id: chatId}).participants.filter((p)=>(p.id!=user._id))[0].id;
   recepientDetails= Users.findOne({_id:recepientId});
-  console.log("recepiecn: ", recepientDetails)
+  // console.log("recepiecn: ", recepientDetails)
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [isAllLoaded, setIsAllLoaded] = useState(false);
   const [msgs, setMsgs]= useState([]);
@@ -183,7 +183,7 @@ export default withTracker(({route, navigation}) => {
   const chatId = route.params.chatId;
   const handle = Meteor.subscribe('chatMessages', chatId);
   const ready = handle.ready();
-  const messages = ChatMessages.find({},{sort: {createdAt: -1}, limit: 13}).fetch();
+  const messages = ChatMessages.find({_id: chatId},{sort: {createdAt: -1}, limit: 13}).fetch();
   const user = Meteor.user();
   return {
     chatId,

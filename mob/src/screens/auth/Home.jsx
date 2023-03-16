@@ -1,51 +1,43 @@
 import React, {useState} from 'react';
 import {StyleSheet, FlatList, View, Text, TouchableOpacity} from 'react-native';
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
-
-// import Header from '../../components/Header';
 import ChatHead from '../../components/ChatHead';
 
 const Chat = new Mongo.Collection('chat');
-// const Users = new Mongo.Collection('users');
 const ChatMessages = new Mongo.Collection('chatMessages');
-// const DATA = [
-//   {
-//     id: '1',
-//     name: 'Alice',
-//     lastMessage: 'Hey, how are you?',
-//     time: '10:30 AM',
-//     image: 'https://i.pravatar.cc/300?img=1',
-//   },
-//]
-
 
 function Home({ready, chatData, chatMessages, users, navigation}) {
+  
   if (!ready) return;
-  // console.log("user: ",users[0]);
-  const renderItem = ({ item }) => {
-    // console.log(item);
+  //
+  const renderItem = ({item}) => {
+    //
     const currentChatMessages = chatMessages.filter(
       message => message.chatId === item._id,
-    );
-    const currentChatUsers = item.participants.map(participant =>
-      users.find(user => user._id === participant.id),
-    );
-  
+      );
+
+    const recepient = item.participants.filter((participant)=>participant.id!=Meteor.user()._id).map((rece)=>(
+      users.find((user)=>(user._id==rece.id))
+    ));
+    console.log('recepient: ', recepient);
+
     return (
-      <TouchableOpacity onPress={()=>{
-        // console.log(item._id);
-        navigation.navigate('Chat Window',{
-          chatId: item._id
-        })
-      }}>
-        <ChatHead item={item} currentChatMessages={currentChatMessages} currentChatUsers={currentChatUsers}/>
+      <TouchableOpacity
+        onPress={() => {
+          //
+          navigation.navigate('Chat Window', {
+            chatId: item._id,
+            chatMessages: currentChatMessages,
+            recepient
+          });
+        }}>
+        <ChatHead
+          lastMessage={currentChatMessages[0]}
+          recepient={recepient}
+        />
       </TouchableOpacity>
     );
-    // return <View></View>
-      }
-  // console.log('chatData: ', chatData);
-  // console.log('chatMessages: ', chatMessages);
-  // console.log('users: ', users);
+  };
 
   if (chatData.length === 0)
     return (
@@ -90,9 +82,10 @@ export default withTracker(() => {
 
   // // Get the chat data
   const chatData = Chat.find().fetch();
-
+  //
   // // Get the chat message data
-  const chatMessages = ChatMessages.find().fetch();
+  const chatMessages = ChatMessages.find({},{sort: {createdAt: -1}}).fetch();
+  //
 
   // // Get the user data
   const users = Meteor.users.find().fetch();
