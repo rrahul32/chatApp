@@ -12,6 +12,7 @@ import { Meteor } from "meteor/meteor";
 import rateLimit from "../../lib/rate-limit";
 import { errorMessages } from "../../config/strings.js";
 import ProfileImages from "./ProfileImages";
+import Chat from "../Chat";
 
 let contactSchema = new SimpleSchema({
   formattedPhoneNumber: {
@@ -392,10 +393,16 @@ export const findUsers = new ValidatedMethod({
   run(data) {
 
       // const regex = new RegExp("+91" + data, "i"); // create a regular expression to match the search query
+      const excludeUsers= Chat.find({"participants.id": Meteor.user()._id}).fetch().map(user=>{
+        return user.participants.filter((participant)=>(participant.id!=Meteor.user()._id))[0].id
+      });
+      // const excludeUsers= Chat.find().fetch();
+      // console.log('excludeUsers: ', excludeUsers)
 
+      
       const results = Meteor.users.find(
         {
-          _id: { $ne: Meteor.user()._id },
+          _id: { $nin: [Meteor.user()._id,...excludeUsers] },
           "profile.number": { $eq: '+91'+data.number }, // search for phone numbers that match the search query
         },
         {
@@ -407,7 +414,7 @@ export const findUsers = new ValidatedMethod({
           },
         }
       ).fetch();
-      console.log(results);
+      // console.log(results);
       return results;
   },
 });

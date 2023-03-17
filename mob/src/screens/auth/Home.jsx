@@ -82,12 +82,15 @@ export default withTracker(() => {
   // // Get the chat data
   const chatData = Chat.find().fetch();
   //
+  
+
   // // Get the chat message data
   const chatMessages = ChatMessages.find({},{sort: {createdAt: -1}}).fetch();
   //
 
   // // Get the user data
   const users = Meteor.users.find().fetch();
+
 
   // Return the data as props to the component
   return {

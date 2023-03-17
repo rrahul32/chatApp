@@ -40,17 +40,18 @@ const AddChat = ({navigation}) => {
     )
   };
 
-  const handleStartChat = (userId) => {
+  const handleStartChat = (user) => {
     // Code to start chat with user
-    console.log('Starting chat with user:', userId);
+    console.log('Starting chat with user:', user.profile.name);
 
-    Meteor.call('createChat', {userId: userId}, (error,result)=>{
+    Meteor.call('createChat', {userId: user._id}, (error,result)=>{
       if(error)
       console.log(error);
       else{
         console.log(result);
         navigation.navigate('Chat Window',{
-          chatId: result
+          chatId: result,
+          recepient: user
         })
       }
     }
@@ -61,7 +62,7 @@ const AddChat = ({navigation}) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.resultItem}
-      onPress={() => handleStartChat(item._id)}
+      onPress={() => handleStartChat(item)}
     >
       {console.log("item: ",item)}
       <Text style={styles.resultName}>{item.profile.name}</Text>

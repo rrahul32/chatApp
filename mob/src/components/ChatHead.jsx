@@ -31,13 +31,17 @@ const ChatHead = ({lastMessage, recepient}) => {
           <View style={styles.itemHeader}>
             <Text style={styles.itemName}>{recepient.profile.name}</Text>
             <Text style={styles.itemTime}>
-              {lastMessage.createdAt.toLocaleDateString('en-US', {
+              {lastMessage?lastMessage.createdAt.toLocaleDateString('en-US', {
                 day: '2-digit',
                 weekday: 'short',
-              })}
+              }):''}
             </Text>
           </View>
-          <Text style={styles.itemLastMessage} numberOfLines={1} >{lastMessage.text}</Text>
+          {
+            lastMessage?
+            <Text style={styles.itemLastMessage} numberOfLines={1} >{lastMessage.text}</Text>
+            : <Text style={{color: '#349ad7'}}>Start Chat</Text>
+          }
           {/* <Text style={styles.itemLastMessage} numberOfLines={1}>
             nil
           </Text> */}
