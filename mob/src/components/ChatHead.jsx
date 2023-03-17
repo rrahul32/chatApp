@@ -29,7 +29,7 @@ const ChatHead = ({lastMessage, recepient}) => {
         />
         <View style={styles.itemContent}>
           <View style={styles.itemHeader}>
-            <Text style={styles.itemName}>{recepient[0].profile.name}</Text>
+            <Text style={styles.itemName}>{recepient.profile.name}</Text>
             <Text style={styles.itemTime}>
               {lastMessage.createdAt.toLocaleDateString('en-US', {
                 day: '2-digit',

@@ -18,8 +18,8 @@ function Home({ready, chatData, chatMessages, users, navigation}) {
 
     const recepient = item.participants.filter((participant)=>participant.id!=Meteor.user()._id).map((rece)=>(
       users.find((user)=>(user._id==rece.id))
-    ));
-    console.log('recepient: ', recepient);
+    ))[0];
+    
 
     return (
       <TouchableOpacity
@@ -27,7 +27,6 @@ function Home({ready, chatData, chatMessages, users, navigation}) {
           //
           navigation.navigate('Chat Window', {
             chatId: item._id,
-            chatMessages: currentChatMessages,
             recepient
           });
         }}>
