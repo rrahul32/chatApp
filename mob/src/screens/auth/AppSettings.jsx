@@ -2,14 +2,23 @@ import React from 'react';
 import Meteor, {Mongo, withTracker} from '@meteorrn/core';
 import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 
-const AppSettings = () => {
+const Settings = new Mongo.Collection('settings',{connection: null});
+
+const AppSettings = ({navigation}) => {
+  function handleChatBackgroundChange(){
+    console.log(
+      Settings.find().fetch()
+    );
+  }
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.settingOption}>
+      <TouchableOpacity style={styles.settingOption} onPress={()=>{
+        navigation.navigate('Edit Profile');
+      }}>
         <Text style={styles.optionText}>Edit Profile</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.settingOption}>
-        <Text style={styles.optionText}>Change Background</Text>
+      <TouchableOpacity style={styles.settingOption} onPress={handleChatBackgroundChange}>
+        <Text style={styles.optionText}>Change Chat Background</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.settingOption}>
         <Text style={styles.optionText}>Change Alert Tone</Text>

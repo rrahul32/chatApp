@@ -30,7 +30,11 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
 
     navigation.setOptions({
       headerTitle: () => (
-        <TouchableOpacity style={styles.containerHead}>
+        <TouchableOpacity style={styles.containerHead}
+        onPress={()=>{
+          navigation.navigate("View Profile",{user:recepient});
+        }}
+        >
           <Image
             source={{uri: 'https://via.placeholder.com/150'}}
             style={styles.avatar}
