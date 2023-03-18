@@ -9,15 +9,13 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Meteor,{withTracker} from '@meteorrn/core';
-import {launchImageLibrary} from 'react-native-image-picker';
-import ImageEditor from '@react-native-community/image-editor';
-import RNFetchBlob from 'rn-fetch-blob';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const EditProfile = ({user, navigation}) => {
-  // console.log("user: ", user);
+  console.log("user: ", user.profile.image);
   const [name, setName] = useState(user.profile.name);
-  const [image, setImage] = useState('https://via.placeholder.com/150');
-  // const [image, setImage] = useState('"file://'+RNFS.DocumentDirectoryPath + '/profile.jpg');
+  const [imageURI, setImageURI] = useState(user.profile.image?user.profile.image.url:'https://via.placeholder.com/150');
+  const [image, setImage] = useState({});
 
   const handleUpdate = () => {
     // handle updating user profile data
@@ -29,17 +27,10 @@ const EditProfile = ({user, navigation}) => {
       '🚀 ~ file: profileUpdate.jsx:13 ~ handleUpdate ~ setName:',
       name,
     );
-    if (image != 'https://via.placeholder.com/150')
-      RNFetchBlob.fs
-        .readFile(image, 'base64')
-        .then(data => {
-          const base64Image = `data:image/jpeg;base64,${data}`;
-          // Do something with the base64Image data
-          // console.log("base64: "+base64Image);
-          // const user= Meteor.user();
+    if (image != {})
           Meteor.call(
             'uploadProfileImage',
-            {image: base64Image, type: 'image/jpeg'},
+            {image: image.data, type: image.mime},
             error => {
               if (error) {
                 console.log(error);
@@ -48,10 +39,6 @@ const EditProfile = ({user, navigation}) => {
               }
             },
           );
-        })
-        .catch(error => {
-          console.error(error);
-        });
     Meteor.call(
       'updateProfileDetails',
       {
@@ -69,50 +56,22 @@ const EditProfile = ({user, navigation}) => {
   };
 
   const handleImageChange = () => {
-    const options = {
-      title: 'Select Profile Picture',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    // console.log(ImagePicker)
-    launchImageLibrary(options, response => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        const source = {
-          uri: response.assets[0].uri,
-          height: response.assets[0].height,
-          width: response.assets[0].width,
-        };
-
-        const cropData = {
-          offset: {x: 0, y: 0},
-          size: {width: source.width, height: source.height},
-          displaySize: {width: 300, height: 300},
-        };
-        // console.log('ImageEditor: ', ImageEditor);
-
-        ImageEditor.cropImage(source.uri, cropData).then(url => {
-          if (url) {
-            // console.log('Cropped image uri', url);
-            setImage(url);
-          }
-        });
-      }
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+      includeBase64: true
+    }).then(image => {
+      console.log(image);
+      setImageURI(`data:${image.mime};base64,${image.data}`);
+      setImage(image);
     });
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.imageWrapper} onPress={handleImageChange}>
-        <Image style={styles.image} source={{uri: image}} />
+        <Image style={styles.image} source={{uri: imageURI}} />
         <View style={styles.editIconWrapper}>
           <Icon style={styles.editIcon} name="edit" />
         </View>
