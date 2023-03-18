@@ -2,16 +2,10 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   Image,
   StyleSheet,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
-import Meteor,{withTracker} from '@meteorrn/core';
-import {launchImageLibrary} from 'react-native-image-picker';
-import ImageEditor from '@react-native-community/image-editor';
-import RNFetchBlob from 'rn-fetch-blob';
+import {withTracker} from '@meteorrn/core';
 
 const ViewProfile = ({user, navigation}) => {
   return (

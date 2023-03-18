@@ -113,6 +113,19 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
         }
       },
     );
+
+    Meteor.call(
+      'translateMessage',
+      {text:newMessages[0].text, language: 'hindi'},
+      (error, result)=>{
+        if (error) {
+          console.log("Translate error: ", error)
+        } else {
+          console.log('Translate result: ', result);
+          alert(result);
+        }
+      }
+    );
     // GiftedChat.append(chatMessages, newMessages);
     // setMessagess(previousMessages =>
     // );
