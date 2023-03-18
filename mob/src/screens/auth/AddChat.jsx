@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Contacts from 'react-native-contacts';
 import {
   View,
   TextInput,
@@ -6,8 +7,10 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  PermissionsAndroid
 } from 'react-native';
 import Meteor from '@meteorrn/core';
+
 
 // const users = [
 //   { id: '1', name: 'John Doe', phone: '555-1234' },
@@ -15,6 +18,26 @@ import Meteor from '@meteorrn/core';
 //   { id: '3', name: 'Bob Johnson', phone: '555-9876' },
 //   { id: '4', name: 'Sarah Lee', phone: '555-4321' },
 // ];
+
+PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+  title: 'Contacts',
+  message: 'This app would like to view your contacts.',
+  buttonPositive: 'Please accept bare mortal',
+})
+  .then((res) => {
+      console.log('Permission: ', res);
+      Contacts.getAll()
+          .then((contacts) => {
+              // work with contacts
+              console.log(contacts);
+          })
+          .catch((e) => {
+              console.log(e);
+          });
+  })
+  .catch((error) => {
+      console.error('Permission error: ', error);
+  });
 
 const AddChat = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
