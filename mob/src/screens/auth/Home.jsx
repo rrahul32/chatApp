@@ -39,6 +39,15 @@ function Home({ready, chatData, chatMessages, users, navigation}) {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>No Chats Found!!!</Text>
+        <View style={{position: 'absolute', bottom: 20, right: 20}}>
+        <TouchableOpacity
+        onPress={()=>{
+          navigation.navigate("Add Chat");
+        }}
+        >
+          <Icon name="add-circle-outline" size={50} color="black"/>
+        </TouchableOpacity>
+      </View>
       </View>
     );
 

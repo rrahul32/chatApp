@@ -84,7 +84,10 @@ const translateMessage = new ValidatedMethod({
       // }],
       // });
       // console.log(completions.data.choices[0].message.content);
+      
+      // const translation = completions.data.choices[0].message.content.replace(/^\n+|\n+$/g, "");
   
+      // return translation;
 
       try {
         const response = await axios.get('https://translate.googleapis.com/translate_a/single', {
@@ -96,6 +99,7 @@ const translateMessage = new ValidatedMethod({
             q: text,
           },
         });
+        console.log('response: ', response.data);
         const translation = response.data[0][0][0];
         return translation;
       } catch (error) {
@@ -103,9 +107,6 @@ const translateMessage = new ValidatedMethod({
       }
 
 
-      // const translation = completions.data.choices[0].message.content.replace(/^\n+|\n+$/g, "");
-  
-      // return translation;
 
     } else {
       throw new Meteor.Error(errorMessages.forbidden);
