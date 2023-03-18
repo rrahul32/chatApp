@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {GiftedChat, Bubble} from 'react-native-gifted-chat';
 import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
+import ReceiverBubble from '../../components/ReceiverBubble';
+
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
 
 const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findEarlierMessages}) => {
@@ -12,6 +14,9 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [isAllLoaded, setIsAllLoaded] = useState(messages.length<13);
   const [msgs, setMsgs] = useState([]);
+  const appendNewMessage = (newMessage) => {
+    setMsgs(previousMessages => GiftedChat.append(previousMessages, newMessage))
+  }
 
   
   useEffect(() => {
@@ -27,7 +32,6 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
         };
       }),
     );
-
     navigation.setOptions({
       headerTitle: () => (
         <TouchableOpacity style={styles.containerHead}
@@ -47,20 +51,12 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
 
   //
   function renderMessage(props) {
+    // const [translating, setTranslating] = useState(false);
     const isCurrentUser = props.currentMessage.user._id === user._id;
 
     if (!isCurrentUser) {
       return (
-        <Bubble
-          {...props}
-          wrapperStyle={{
-            left: {
-              backgroundColor: 'lightgrey', // set the background color for messages sent by other users
-              marginBottom: 3,
-              marginLeft: 7,
-            },
-          }}
-        />
+        <ReceiverBubble data={props}/>
       );
     }
     return (
@@ -103,32 +99,27 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
 
   function onSend(newMessages = []) {
     //
+    const randomId= Math.floor(Math.random() * 100) + 1;
+    appendNewMessage({
+      _id: randomId,
+      text: newMessages[0].text,
+      createdAt: new Date(),
+      user: {
+        _id: user._id,
+      },
+    });
+
     Meteor.call(
       'sendMessage',
       {chatId: chatId, text: newMessages[0].text},
       (error, result) => {
         if (error) {
         } else {
-          
+          console.log("sent message: ", result);
         }
       },
     );
 
-    Meteor.call(
-      'translateMessage',
-      {text:newMessages[0].text, language: 'hindi'},
-      (error, result)=>{
-        if (error) {
-          console.log("Translate error: ", error)
-        } else {
-          console.log('Translate result: ', result);
-          alert(result);
-        }
-      }
-    );
-    // GiftedChat.append(chatMessages, newMessages);
-    // setMessagess(previousMessages =>
-    // );
   }
 
   

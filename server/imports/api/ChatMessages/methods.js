@@ -9,6 +9,7 @@ import { Meteor } from "meteor/meteor";
 import SimpleSchema from "simpl-schema";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Configuration, OpenAIApi } from "openai";
+import axios from 'axios';
 
 import rateLimit from "../../lib/rate-limit";
 import { AppConstants } from "../../config";
@@ -74,20 +75,37 @@ const translateMessage = new ValidatedMethod({
     if (thisUser) {
       const text = translateData.text;
       const language = translateData.language;
-      const prompt = `Translate the following text to ${language}:\n\n ${text}`;
-      const completions = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{
-          role: "user", 
-          content: `Translate the following text to ${language}:\n\n ${text}`
-      }],
-      });
-      console.log(completions.data.choices[0].message.content);
+      // const prompt = `Translate the following text to ${language}: ${text}`;
+      // const completions = await openai.createChatCompletion({
+      //   model: "gpt-3.5-turbo",
+      //   messages: [{
+      //     role: "user", 
+      //     content: prompt,
+      // }],
+      // });
+      // console.log(completions.data.choices[0].message.content);
   
-      // const translation = completions.choices[0].text.trim();
-      const translation = completions.data.choices[0].message.content;
+
+      try {
+        const response = await axios.get('https://translate.googleapis.com/translate_a/single', {
+          params: {
+            client: 'gtx',
+            sl: 'auto',
+            tl: language.substring(0,2),
+            dt: 't',
+            q: text,
+          },
+        });
+        const translation = response.data[0][0][0];
+        return translation;
+      } catch (error) {
+        console.error(error);
+      }
+
+
+      // const translation = completions.data.choices[0].message.content.replace(/^\n+|\n+$/g, "");
   
-      return translation;
+      // return translation;
 
     } else {
       throw new Meteor.Error(errorMessages.forbidden);
