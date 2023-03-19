@@ -9,6 +9,7 @@ import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
 import { Mongo } from "meteor/mongo";
 import { check } from "meteor/check";
+import { addOrUpdateUserSettings } from "../../../api/UserSettings/modules";
 
 // import { sendOTP } from "../../../modules/sms";
 // import { errorMessages } from "../../../config/strings.js";
@@ -171,6 +172,9 @@ class Phone {
         },
         createdAt: new Date()
       });
+      addOrUpdateUserSettings(userId).catch((e)=>{
+        console.log(e);
+      })
     }
 
     codes.remove({

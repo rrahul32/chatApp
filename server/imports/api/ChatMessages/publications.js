@@ -5,7 +5,7 @@ Meteor.publish('chatMessages', function(chatId) {
     // Check if the user is authenticated
   const thisUser = Meteor.user();
     if (!thisUser) {
-      return this.ready();
+      return null;
     }
   
     // Define the fields to be returned

@@ -16,7 +16,7 @@ const ProfileUpdate = () => {
   // console.log(Meteor.user());
   const [name, setName] = useState('');
   const [imageURI, setImageURI] = useState('https://via.placeholder.com/150');
-  const [image, setImage] = useState({});
+  const [image, setImage] = useState(null);
 
   const handleUpdate = () => {
     // handle updating user profile data
@@ -28,7 +28,7 @@ const ProfileUpdate = () => {
       '🚀 ~ file: profileUpdate.jsx:13 ~ handleUpdate ~ setName:',
       name,
     );
-    if (image != {}){
+    if (image !== null){
       Meteor.call(
         'uploadProfileImage',
         {image: image.data, type: image.mime},

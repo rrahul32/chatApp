@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
 export default withTracker(() => {
   // Subscribe to the chat publication
   const handle = Meteor.subscribe('chat');
-
   // Check if the subscription is ready
   const ready = handle.ready();
 
@@ -137,6 +136,10 @@ export default withTracker(() => {
 
   // // Get the user data
   const users = Meteor.users.find().fetch();
+
+  const settings = new Mongo.Collection('userSettings');
+
+  console.log("settings: ", settings.find().fetch());
 
   // Return the data as props to the component
   return {

@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2019-present, Evolvier Technologies. All rights reserved.
- *
- */
 
 "use strict";
 
@@ -16,7 +12,6 @@ import { AppConstants } from "../../config";
 import { createChatMessage } from "./modules";
 
 const errorMessages = AppConstants.errorMessages;
-const userTypes = AppConstants.userTypes;
 const configuration = new Configuration({
   apiKey: Meteor.settings.private.openai.apiKey,
 });
@@ -28,10 +23,6 @@ const sendMessage = new ValidatedMethod({
     "chatId": {
       type: String
     },
-    // "businessId": {
-    //   type: String,
-    //   optional: true
-    // },
     "text": {
       type: String
     }
@@ -41,13 +32,6 @@ const sendMessage = new ValidatedMethod({
     const thisUser = Meteor.user();
     if (thisUser) {
       let user = thisUser;
-      // let userType = userT ypes.user;
-      // if (chatData.businessId) {
-        //   user = {
-          //     _id: chatData.businessId
-          //   };
-          //   userType = userTypes.business;
-          // }
           return createChatMessage(chatData.chatId, user._id, chatData.text).catch((e) => {
         console.log(e);
         // console.log();
