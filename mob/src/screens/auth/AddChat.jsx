@@ -16,6 +16,8 @@ import Meteor from '@meteorrn/core';
 const AddChat = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [findResults, setFindResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [dBContacts, setdBContacts] = useState([]);
   let formattedContactList = [];
   let contactList = [];
@@ -94,20 +96,16 @@ const AddChat = ({navigation}) => {
 
   const handleSearch = text => {
     setSearchQuery(text);
-    // const results = users.filter(
-    //   (user) =>
-    //     user.name.toLowerCase().includes(text.toLowerCase()) ||
-    //     user.phone.includes(text)
-    // );
-    // console.log(text.length);
-    if (text.length >= 10)
-      Meteor.call('findUsers', {number: text}, (error, result) => {
-        if (error) console.log(error);
-        else {
-          console.log(result);
-          setSearchResults(result);
-        }
-      });
+    if (text.length > 0)
+    {
+      text=text.toLowerCase();
+      setIsSearching(true);
+        const fromDB=dBContacts.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text));
+        const fromLocal=searchResults.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text));
+        setFindResults([...fromDB,...fromLocal]);
+    }
+    else
+    setIsSearching(false);
   };
 
   const handleStartChat = user => {
@@ -186,7 +184,7 @@ const AddChat = ({navigation}) => {
         onChangeText={handleSearch}
       />
       <FlatList
-        data={[...dBContacts, ...searchResults]}
+        data={isSearching?findResults:[...dBContacts, ...searchResults]}
         renderItem={renderItem}
         keyExtractor={item => item.formattedPhoneNumber}
       />
