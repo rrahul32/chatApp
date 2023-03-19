@@ -10,12 +10,13 @@ import {
   PermissionsAndroid,
   Image
 } from 'react-native';
-import Meteor, {withTracker} from '@meteorrn/core';
+import Meteor from '@meteorrn/core';
 
 const AddChat = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [dBContacts, setdBContacts] = useState([]);
+  let formattedContactList = [];
   let contactList = [];
   
   useEffect(() => {
@@ -33,7 +34,7 @@ const AddChat = ({navigation}) => {
             const filteredContacts = contacts.filter(
               contact => contact.phoneNumbers.length > 0
             );
-            console.log('filteredContacts: ', filteredContacts.length);
+            console.log('filteredContacts: ', filteredContacts[0]);
               filteredContacts.forEach(contact => {
                 contact.phoneNumbers.forEach(phoneNumber => {
                   // console.log(phoneNumber.number);
@@ -42,8 +43,15 @@ const AddChat = ({navigation}) => {
                   if(phoneNumber.number){
                     const formattedPhoneNumber = "+91"+phoneNumber.number.replace(/[\s-]|(\+91)/g, "");
                       if(formattedPhoneNumber.length===13)
-                      contactList = [
-                        ...contactList,
+                        contactList = [
+                          ...contactList,
+                          {
+                            name: contact.displayName,
+                            formattedPhoneNumber: formattedPhoneNumber
+                          }
+                        ];
+                      formattedContactList = [
+                        ...formattedContactList,
                         {
                           formattedPhoneNumber ,
                         },
@@ -52,20 +60,24 @@ const AddChat = ({navigation}) => {
                 });
               });
               // console.log('contactList: ', contactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
-              const uniqueContactList = contactList.filter(
-                (item, index) => index === contactList.findIndex((i) => i.formattedPhoneNumber === item.formattedPhoneNumber)
+              const uniqueFormattedContactList = formattedContactList.filter(
+                (item, index) => index === formattedContactList.findIndex((i) => i.formattedPhoneNumber === item.formattedPhoneNumber)
                 );
-                console.log('uniqueContactList: ', uniqueContactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
+              const uniqueContactList = contactList.filter(
+                (item, index) => index === contactList.findIndex((i)=> i.formattedPhoneNumber === item.formattedPhoneNumber)
+              );
+                // console.log('uniqueContactList: ', uniqueContactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
               Meteor.call(
                 'getContactList',
-                {contacts: uniqueContactList},
+                {contacts: uniqueFormattedContactList},
                 (error, result) => {
                   if (error) {
                     console.log('getContactList Error: ', error);
                   } else {
                     // console.log('result: ', result);
                     setdBContacts(result);
-                    setSearchResults(uniqueContactList);
+                    const mappedResults=result.map(contact=>contact.formattedPhoneNumber);
+                    setSearchResults(uniqueContactList.filter((contact)=>!mappedResults.includes(contact.formattedPhoneNumber)));
                   }
                 },
               );
@@ -120,21 +132,42 @@ const AddChat = ({navigation}) => {
     });
   };
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.resultItem}
-      onPress={() => handleStartChat(item)}>
+  const renderItem = ({item}) => {
+    // console.log(item)
+    if(item.user)
+      return(
+        <TouchableOpacity
+        style={styles.resultItem}
+        onPress={() => handleStartChat(item)}>
       <Image
           source={{uri: item.picture?item.picture:'https://via.placeholder.com/150'}}
           style={styles.avatar}
-        />
-        <View style={{gap:2}}>
+          />
+        <View style={styles.detail}>
       <Text style={styles.resultName}>{item.name}</Text>
       <Text style={styles.resultPhone}>{item.formattedPhoneNumber}</Text>
         </View>
       <Text style={styles.resultButton}>Start Chat</Text>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+          )
+    else
+    return(
+      <TouchableOpacity
+        style={styles.resultItem}
+        // onPress={() => handleStartChat(item)}
+        >
+      <Image
+          source={{uri: 'https://via.placeholder.com/150'}}
+          style={styles.avatar}
+          />
+        <View style={styles.detail}>
+      <Text style={styles.resultName}>{item.name}</Text>
+      <Text style={styles.resultPhone}>{item.formattedPhoneNumber}</Text>
+        </View>
+      <Text style={styles.resultButton}>Invite</Text>
+      </TouchableOpacity>
+    )
+    };
 
   return (
     <View style={styles.container}>
@@ -146,9 +179,9 @@ const AddChat = ({navigation}) => {
         onChangeText={handleSearch}
       />
       <FlatList
-        data={searchResults}
+        data={[...dBContacts, ...searchResults]}
         renderItem={renderItem}
-        keyExtractor={item => item.user}
+        keyExtractor={item => item.formattedPhoneNumber}
       />
     </View>
   );
@@ -171,6 +204,7 @@ const styles = StyleSheet.create({
   resultItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#DDD',
@@ -198,6 +232,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginRight: 20,
   },
+  detail: {
+    alignItems: 'center',
+
+  }
 });
 
 export default AddChat;
