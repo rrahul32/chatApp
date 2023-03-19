@@ -19,10 +19,10 @@ let contactSchema = new SimpleSchema({
     type: String,
     optional: true,
   },
-  email: {
-    type: String,
-    optional: true,
-  },
+  // email: {
+  //   type: String,
+  //   optional: true,
+  // },
 });
 
 const countrySchema = new SimpleSchema({
@@ -102,28 +102,30 @@ export const getContactList = new ValidatedMethod({
     const thisUser = Meteor.user();
     if (thisUser) {
       let contactList = [];
+      // console.log(contactData.contacts);
+      // console.log(contactData.contacts.length);
       contactData.contacts.forEach((contact) => {
-        let orQuery = [];
+        let query;
         if (contact && contact.formattedPhoneNumber) {
-          orQuery.push({
+          query={
             phone: {
               $elemMatch: {
                 number: contact.formattedPhoneNumber,
                 verified: true,
               },
             },
-          });
+          };
         }
-        if (contact && contact.email) {
-          orQuery.push({
-            emails: {
-              $elemMatch: {
-                address: contact.email,
-                verified: true,
-              },
-            },
-          });
-        }
+        // if (contact && contact.email) {
+        //   orQuery.push({
+        //     emails: {
+        //       $elemMatch: {
+        //         address: contact.email,
+        //         verified: true,
+        //       },
+        //     },
+        //   });
+        // }
         // const contactUserData = Meteor.users.findOne({
         //   $or: [{
         //     "phone.number": contact.formattedPhoneNumber,
@@ -151,9 +153,7 @@ export const getContactList = new ValidatedMethod({
         //   }]
         // });
 
-        const query = {
-          $or: orQuery,
-        };
+
         const contactUserData = Meteor.users.findOne(query);
         if (contactUserData && contactUserData._id !== thisUser._id) {
           const existingContactListUser = contactList.find(
