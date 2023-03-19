@@ -1,30 +1,11 @@
 import {StyleSheet, Text, View, Image} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import Meteor from '@meteorrn/core';
-import RNImgToBase64 from 'react-native-image-base64';
-// import Icon from 'react-native-ionicons';
+import React from 'react';
 
 const ChatHead = ({lastMessage, recepient}) => {
-  // const recepient = currentChatUsers.filter(
-  //   user => user._id !== Meteor.user()._id,
-  // );
-  const [base64Image, setBase64Image] = useState('https://via.placeholder.com/150');
-  // useEffect(() => {
-  //   const fetchImage = async () => {
-  //     try {
-  //       const base64 = await RNImgToBase64.getBase64String('http://192.168.1.2:3000/cdn/storage/profileImages/CdXhfigE3fKhfRJLT/original/CdXhfigE3fKhfRJLT.jpg');
-  //       setBase64Image(`data:image/png;base64,${base64}`);
-  //     } catch (error) {
-  //       
-  //     }
-  //   };
-  //   fetchImage();
-  // }, []);
-
   return (
       <View style={styles.item}>
         <Image
-          source={{uri: base64Image}}
+          source={{uri: recepient.profile.image?recepient.profile.image.url:'https://via.placeholder.com/150'}}
           style={styles.avatar}
         />
         <View style={styles.itemContent}>
@@ -42,28 +23,9 @@ const ChatHead = ({lastMessage, recepient}) => {
             <Text style={styles.itemLastMessage} numberOfLines={1} >{lastMessage.text}</Text>
             : <Text style={{color: '#349ad7'}}>Start Chat</Text>
           }
-          {/* <Text style={styles.itemLastMessage} numberOfLines={1}>
-            nil
-          </Text> */}
         </View>
       </View>
   );
-  // return (
-  //   <View style={styles.item}>
-  //     {/* <Image source={{ uri: item.image }} style={styles.avatar} /> */}
-  //     <View style={styles.itemContent}>
-  //       <View style={styles.itemHeader}>
-  //         <Text style={styles.itemName}>{recepient.profile.name}</Text>
-  //         <Text style={styles.itemTime}>{item.lastMessageAt.toString()}</Text>
-  //       </View>
-  //       {/* <Text style={styles.itemLastMessage} numberOfLines={1} >{item.lastMessage}</Text> */}
-  //       <Text style={styles.itemLastMessage} numberOfLines={1}>
-  //         nil
-  //       </Text>
-  //     </View>
-  //     {/* <Icon name="chevron-forward-outline" size={20} color="#b2b2b2" /> */}
-  //   </View>
-  // );
 };
 
 export default ChatHead;

@@ -40,7 +40,7 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
         }}
         >
           <Image
-            source={{uri: 'https://via.placeholder.com/150'}}
+            source={{uri: recepient.profile.image?recepient.profile.image.url:'https://via.placeholder.com/150'}}
             style={styles.avatar}
           />
           <Text style={styles.title}>{recepient.profile.name}</Text>
@@ -172,10 +172,8 @@ const styles = StyleSheet.create({
 
 export default withTracker(({route, navigation}) => {
   const chatId = route.params.chatId;
-  const recepient = route.params.recepient;
+  const recepientId = route.params.recepientId;
   const ChatMessages = new Mongo.Collection('chatMessages');
-  
-  
   const messages = ChatMessages.find(
     {chatId: chatId},
     {sort: {createdAt: -1}, limit: 13},
@@ -188,6 +186,8 @@ export default withTracker(({route, navigation}) => {
   );
   const user = Meteor.user();
   const users = Meteor.users;
+  const recepient = users.findOne({_id: recepientId});
+  console.log("recepient: ", recepient);
   return {
     chatId,
     messages,

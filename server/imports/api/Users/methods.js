@@ -25,22 +25,6 @@ let contactSchema = new SimpleSchema({
   // },
 });
 
-const countrySchema = new SimpleSchema({
-  key: {
-    type: Number,
-    optional: true,
-  },
-  name: {
-    type: String,
-  },
-  dial_code: {
-    type: String,
-  },
-  code: {
-    type: String,
-  },
-});
-
 export const updateProfileDetails = new ValidatedMethod({
   name: "updateProfileDetails",
   validate: new SimpleSchema({

@@ -27,7 +27,7 @@ function Home({ready, chatData, chatMessages, users, navigation}) {
           //
           navigation.navigate('Chat Window', {
             chatId: item._id,
-            recepient,
+            recepientId: recepient._id,
           });
         }}>
         <ChatHead lastMessage={currentChatMessages[0]} recepient={recepient} />

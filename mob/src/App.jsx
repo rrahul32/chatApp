@@ -43,7 +43,7 @@ const renderUI = (user) => {
         }}
         >
           <Image
-            source={{uri: 'https://via.placeholder.com/150'}}
+            source={{uri: user.profile.image?user.profile.image.url:'https://via.placeholder.com/150'}}
             style={styles.avatar}
           />
         </TouchableOpacity>

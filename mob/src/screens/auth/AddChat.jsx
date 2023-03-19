@@ -118,14 +118,7 @@ const AddChat = ({navigation}) => {
         console.log(result);
         navigation.navigate('Chat Window', {
           chatId: result,
-          recepient: {
-            id: user.user,
-            profile: {
-              name: user.name,
-              number: user.formattedPhoneNumber,
-              image: user.picture,
-            }
-          },
+          recepientId: user.user,
         });
       }
     });

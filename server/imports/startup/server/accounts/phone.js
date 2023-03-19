@@ -38,9 +38,15 @@ class Phone {
     Meteor.methods({
       "sendVerificationCode": (phone, isAddPhoneNumber = false) => {
         // console.log(phone);
+        const pattern = /^\+91[6-9]\d{9}$/;
         check(phone, String);
-        console.log("Meteor.settings.dev", Meteor.settings.dev)
-        return this.sendVerificationCode(phone, isAddPhoneNumber, Meteor.settings.dev, Meteor.settings.appReview);
+        if(pattern.test(phone)){
+          console.log("Meteor.settings.dev", Meteor.settings.dev)
+          this.sendVerificationCode(phone, isAddPhoneNumber, Meteor.settings.dev, Meteor.settings.appReview);
+          return true;
+        }
+        else
+        return false;
       }
     });
 

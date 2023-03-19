@@ -7,11 +7,13 @@ export default function Login({onLoggedIn}){
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const handleSendOtp = () => {
-    Meteor.call('sendVerificationCode', "+91" + phoneNumber, (error) => {
+    Meteor.call('sendVerificationCode', "+91" + phoneNumber, (error,data) => {
       if (error) {
         alert(error.error);
       } else {
-        // console.log("true");
+        if(!data)
+        alert("Invalid phone number.")
+        else
         setShowOtpInput(true);
       }
     });
