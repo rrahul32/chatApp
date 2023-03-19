@@ -11,6 +11,7 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 
 import rateLimit from "../../lib/rate-limit";
 import { AppConstants } from "../../config";
+import Chat from "."; 
 import { createChat, resetUnreadChatCount } from "./modules";
 
 const errorMessages = AppConstants.errorMessages;
@@ -25,6 +26,16 @@ const createChatMethod = new ValidatedMethod({
   run({userId}) {
     const thisUser = Meteor.user();
     if (thisUser) {
+      const thisChat=Chat.findOne({
+        participants: {
+          $all: [
+            { $elemMatch: { id: thisUser._id } },
+            { $elemMatch: { id: userId } }
+          ]
+        }
+      });
+      if(thisChat && thisChat._id)
+      return thisChat._id;
       return createChat(thisUser._id, userId);
     } else {
       throw new Meteor.Error(errorMessages.forbidden);

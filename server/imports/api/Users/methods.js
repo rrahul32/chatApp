@@ -155,7 +155,7 @@ export const getContactList = new ValidatedMethod({
 
 
         const contactUserData = Meteor.users.findOne(query);
-        if (contactUserData && contactUserData._id !== thisUser._id) {
+        if (contactUserData && contactUserData._id !== thisUser._id ) {
           const existingContactListUser = contactList.find(
             (item) => item.user === contactUserData._id
           );
@@ -175,12 +175,8 @@ export const getContactList = new ValidatedMethod({
             );
             contactList[index].formattedPhoneNumber =
               contact.formattedPhoneNumber;
-          } else if (existingContactListUser && contact.email) {
-            const index = contactList.findIndex(
-              (eachItem) => eachItem.user === existingContactListUser.user
-            );
-            contactList[index].email = contact.email;
-          } else {
+          }
+          else {
             contactList.push({
               user: contactUserData._id,
               name: contactUserData.profile.name,
