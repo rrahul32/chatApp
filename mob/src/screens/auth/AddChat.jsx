@@ -8,21 +8,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   PermissionsAndroid,
+  Image
 } from 'react-native';
-import Meteor from '@meteorrn/core';
-
-// const users = [
-//   { id: '1', name: 'John Doe', phone: '555-1234' },
-//   { id: '2', name: 'Jane Smith', phone: '555-5678' },
-//   { id: '3', name: 'Bob Johnson', phone: '555-9876' },
-//   { id: '4', name: 'Sarah Lee', phone: '555-4321' },
-// ];
+import Meteor, {withTracker} from '@meteorrn/core';
 
 const AddChat = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  // const [contactList, setContactList] = useState([]);
+  const [dBContacts, setdBContacts] = useState([]);
   let contactList = [];
+  
   useEffect(() => {
     PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
       title: 'Contacts',
@@ -34,7 +29,7 @@ const AddChat = ({navigation}) => {
         Contacts.getAll()
           .then(contacts => {
             // work with contacts
-            console.log(contacts[1]);
+            // console.log(contacts[1]);
             const filteredContacts = contacts.filter(
               contact => contact.phoneNumbers.length > 0
             );
@@ -55,8 +50,8 @@ const AddChat = ({navigation}) => {
                       ];
                     }
                 });
-              }),
-              console.log('contactList: ', contactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
+              });
+              // console.log('contactList: ', contactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
               const uniqueContactList = contactList.filter(
                 (item, index) => index === contactList.findIndex((i) => i.formattedPhoneNumber === item.formattedPhoneNumber)
                 );
@@ -68,7 +63,9 @@ const AddChat = ({navigation}) => {
                   if (error) {
                     console.log('getContactList Error: ', error);
                   } else {
-                    console.log('result: ', result);
+                    // console.log('result: ', result);
+                    setdBContacts(result);
+                    setSearchResults(uniqueContactList);
                   }
                 },
               );
@@ -102,15 +99,22 @@ const AddChat = ({navigation}) => {
 
   const handleStartChat = user => {
     // Code to start chat with user
-    console.log('Starting chat with user:', user.profile.name);
+    console.log('Starting chat with user:', user.name);
 
-    Meteor.call('createChat', {userId: user._id}, (error, result) => {
+    Meteor.call('createChat', {userId: user.user}, (error, result) => {
       if (error) console.log(error);
       else {
         console.log(result);
         navigation.navigate('Chat Window', {
           chatId: result,
-          recepient: user,
+          recepient: {
+            id: user.user,
+            profile: {
+              name: user.name,
+              number: user.formattedPhoneNumber,
+              image: user.picture,
+            }
+          },
         });
       }
     });
@@ -120,9 +124,14 @@ const AddChat = ({navigation}) => {
     <TouchableOpacity
       style={styles.resultItem}
       onPress={() => handleStartChat(item)}>
-      {console.log('item: ', item)}
-      <Text style={styles.resultName}>{item.profile.name}</Text>
-      <Text style={styles.resultPhone}>{item.profile.number}</Text>
+      <Image
+          source={{uri: item.picture?item.picture:'https://via.placeholder.com/150'}}
+          style={styles.avatar}
+        />
+        <View style={{gap:2}}>
+      <Text style={styles.resultName}>{item.name}</Text>
+      <Text style={styles.resultPhone}>{item.formattedPhoneNumber}</Text>
+        </View>
       <Text style={styles.resultButton}>Start Chat</Text>
     </TouchableOpacity>
   );
@@ -139,7 +148,7 @@ const AddChat = ({navigation}) => {
       <FlatList
         data={searchResults}
         renderItem={renderItem}
-        keyExtractor={item => item._id}
+        keyExtractor={item => item.user}
       />
     </View>
   );
@@ -182,6 +191,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'blue',
     textDecorationLine: 'underline',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 20,
   },
 });
 
