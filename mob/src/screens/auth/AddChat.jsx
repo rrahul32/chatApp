@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   PermissionsAndroid,
-  Image
+  Image,
+  Share
 } from 'react-native';
 import Meteor from '@meteorrn/core';
 
@@ -154,7 +155,13 @@ const AddChat = ({navigation}) => {
     return(
       <TouchableOpacity
         style={styles.resultItem}
-        // onPress={() => handleStartChat(item)}
+        onPress={() =>{
+         Share.share({
+          message: `Hey ${item.name},\nConnect with you friend ${Meteor.user().profile.name} on the Chat App`,
+        })
+          .then(result => console.log(result))
+          .catch(error => console.log(error));
+        }}
         >
       <Image
           source={{uri: 'https://via.placeholder.com/150'}}
