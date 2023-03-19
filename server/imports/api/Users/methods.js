@@ -10,7 +10,7 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Meteor } from "meteor/meteor";
 
 import rateLimit from "../../lib/rate-limit";
-import { errorMessages } from "../../config/strings.js";
+import { errorMessages } from "../../config/constants";
 import ProfileImages from "./ProfileImages";
 import Chat from "../Chat";
 

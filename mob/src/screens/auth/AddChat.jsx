@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import Contacts from 'react-native-contacts';
 import {
   View,
   TextInput,
@@ -7,92 +6,25 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  PermissionsAndroid,
   Image,
   Share
 } from 'react-native';
 import Meteor from '@meteorrn/core';
 
-const AddChat = ({navigation}) => {
+const AddChat = ({navigation,route}) => {
+  // console.log("route: ", route)
+  const [contacts, setContacts] = useState([])
+  useEffect(() => {
+    const contactList = route.params.contacts;
+    setContacts(contactList);
+  }, [route.params.contacts])
+  
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const [findResults, setFindResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [dBContacts, setdBContacts] = useState([]);
-  let formattedContactList = [];
-  let contactList = [];
   
-  useEffect(() => {
-    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-      title: 'Contacts',
-      message: 'This app would like to view your contacts.',
-      buttonPositive: 'Please accept bare mortal',
-    })
-      .then(res => {
-        console.log('Permission: ', res);
-        Contacts.getAll()
-          .then(contacts => {
-            // work with contacts
-            // console.log(contacts[1]);
-            const filteredContacts = contacts.filter(
-              contact => contact.phoneNumbers.length > 0
-            );
-            console.log('filteredContacts: ', filteredContacts[0]);
-              filteredContacts.forEach(contact => {
-                contact.phoneNumbers.forEach(phoneNumber => {
-                  // console.log(phoneNumber.number);
-                  // setContactList([...contactList,{formattedPhoneNumber: phoneNumber.number.replace(/[\s+91]/g, "")}]
-                  //   )
-                  if(phoneNumber.number){
-                    const formattedPhoneNumber = "+91"+phoneNumber.number.replace(/[\s-]|(\+91)/g, "");
-                      if(formattedPhoneNumber.length===13)
-                        contactList = [
-                          ...contactList,
-                          {
-                            name: contact.displayName,
-                            formattedPhoneNumber: formattedPhoneNumber
-                          }
-                        ];
-                      formattedContactList = [
-                        ...formattedContactList,
-                        {
-                          formattedPhoneNumber ,
-                        },
-                      ];
-                    }
-                });
-              });
-              // console.log('contactList: ', contactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
-              const uniqueFormattedContactList = formattedContactList.filter(
-                (item, index) => index === formattedContactList.findIndex((i) => i.formattedPhoneNumber === item.formattedPhoneNumber)
-                );
-              const uniqueContactList = contactList.filter(
-                (item, index) => index === contactList.findIndex((i)=> i.formattedPhoneNumber === item.formattedPhoneNumber)
-              );
-                // console.log('uniqueContactList: ', uniqueContactList.find((contact)=> contact.formattedPhoneNumber==='+917012787119'));
-              Meteor.call(
-                'getContactList',
-                {contacts: uniqueFormattedContactList},
-                (error, result) => {
-                  if (error) {
-                    console.log('getContactList Error: ', error);
-                  } else {
-                    // console.log('result: ', result);
-                    setdBContacts(result);
-                    const mappedResults=result.map(contact=>contact.formattedPhoneNumber);
-                    setSearchResults(uniqueContactList.filter((contact)=>!mappedResults.includes(contact.formattedPhoneNumber)));
-                  }
-                },
-              );
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      })
-      .catch(error => {
-        console.error('Permission error: ', error);
-      });
-  }, []);
+  
 
   const handleSearch = text => {
     setSearchQuery(text);
@@ -100,9 +32,10 @@ const AddChat = ({navigation}) => {
     {
       text=text.toLowerCase();
       setIsSearching(true);
-        const fromDB=dBContacts.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text));
-        const fromLocal=searchResults.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text));
-        setFindResults([...fromDB,...fromLocal]);
+        // const fromDB=dBContacts.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text));
+        // const fromLocal=searchResults.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text));
+        // setFindResults([...fromDB,...fromLocal]);
+        setFindResults(contacts.filter((contact)=> contact.name.toLowerCase().includes(text) || contact.formattedPhoneNumber.includes(text)));
     }
     else
     setIsSearching(false);
@@ -177,7 +110,7 @@ const AddChat = ({navigation}) => {
         onChangeText={handleSearch}
       />
       <FlatList
-        data={isSearching?findResults:[...dBContacts, ...searchResults]}
+        data={isSearching?findResults:contacts}
         renderItem={renderItem}
         keyExtractor={item => item.formattedPhoneNumber}
       />

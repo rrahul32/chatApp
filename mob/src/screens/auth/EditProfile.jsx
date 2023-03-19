@@ -65,6 +65,9 @@ const EditProfile = ({user, navigation}) => {
       console.log(image);
       setImageURI(`data:${image.mime};base64,${image.data}`);
       setImage(image);
+    },error=> {
+      console.log(error);
+      alert("Unsupported Image!!! Please try another one.")
     });
   };
 

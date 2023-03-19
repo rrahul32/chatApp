@@ -63,9 +63,12 @@ const ProfileUpdate = () => {
       cropping: true,
       includeBase64: true
     }).then(image => {
-      // console.log(image);
-      setImageURI(`data:${image.mime};base64,${image.data}`);
-      setImage(image);
+        console.log("image: ", image);
+        setImageURI(`data:${image.mime};base64,${image.data}`);
+        setImage(image);
+    }, error=> {
+      console.log(error);
+      alert("Unsupported Image!!! Please try another one.")
     });
   };
 
