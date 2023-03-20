@@ -20,6 +20,7 @@ import ChatWindow from './screens/auth/ChatWindow';
 import AppSettings from './screens/auth/AppSettings';
 import EditProfile from './screens/auth/EditProfile';
 import ViewProfile from './screens/auth/ViewProfile';
+import ChatSettings from './screens/auth/ChatSettings';
 
 const SERVER_URL = "192.168.1.6:3000";
 process.env.SERVER_URL= SERVER_URL;
@@ -86,6 +87,7 @@ const renderUI = user => {
         <Stack.Screen name="Settings" component={AppSettings} />
         <Stack.Screen name="Edit Profile" component={EditProfile} />
         <Stack.Screen name="View Profile" component={ViewProfile} />
+        <Stack.Screen name="Chat Settings" component={ChatSettings} />
         {/* <Stack.Screen name="ProfileUpdate" component={ProfileUpdate} /> */}
       </Stack.Group>
     );

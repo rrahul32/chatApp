@@ -1,19 +1,69 @@
-import React from 'react';
-import Meteor from '@meteorrn/core';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 
-const ChatSettings = ({navigation, route}) => {
+const ChatSettings = ({ handleDeleteChat }) => {
+  const [translation, setTranslation] = useState(false);
+  const [language, setLanguage] = useState('');
+  const [emotionDetection, setEmotionDetection] = useState(false);
+
+  const handleDeleteConfirmation = () => {
+    // Show confirmation modal
+    // If confirmed, call handleDeleteChat function
+  };
+
+  const handleTranslation = (value) => {
+    setTranslation(value);
+  };
+
+  const handleLanguage = (value) => {
+    setLanguage(value);
+  };
+
+  const handleEmotionDetection = (value) => {
+    setEmotionDetection(value);
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.settingOption} onPress={() => {}}>
+      <TouchableOpacity style = {styles.settingOption} onPress={handleDeleteConfirmation}>
         <Text style={styles.optionText}>Delete Chat</Text>
       </TouchableOpacity>
-      <View style={styles.dropdownOption} >
-        <Text style={styles.optionText}> Emotion Detection</Text>
-      </View>
-      <View style={styles.dropdownOption}>
-        <Text style={styles.optionText}> Message Translation</Text>
-      </View>
+
+      <Text style={styles.optionText}>Message Translation:</Text>
+      <Picker
+        selectedValue={translation}
+            onValueChange={(value) => handleTranslation(value)}
+      >
+        <Picker.Item label="Disabled" value={false} color='black'/>
+        <Picker.Item label="Enabled" value={true} color='black' />
+      </Picker>
+
+      {translation && (
+        <View>
+          <Text style={styles.optionText}>Select Language:</Text>
+          <Picker
+            selectedValue={language}
+            onValueChange={(value) => handleLanguage(value)}
+            // color="black"
+          >
+            <Picker.Item label="Hindi" value="hi" color='black'/>
+            <Picker.Item label="Spanish" value="es" color='black'/>
+            <Picker.Item label="French" value="fr" color='black'/>
+            <Picker.Item label="Chinese" value="zh-CN" color='black'/>
+            <Picker.Item label="Malayalam" value="ml" color='black'/>
+          </Picker>
+        </View>
+      )}
+
+      <Text style={styles.optionText}>Emotion Detection:</Text>
+      <Picker
+        selectedValue={emotionDetection}
+        onValueChange={(value) => handleEmotionDetection(value)}
+      >
+        <Picker.Item label="Disabled" value={false} color='black'/>
+        <Picker.Item label="Enabled" value={true} color='black'/>
+      </Picker>
     </View>
   );
 };
@@ -30,18 +80,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
-  dropdownOption: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
   optionText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
 });
-
 export default ChatSettings;
