@@ -3,22 +3,33 @@ import {GiftedChat, Bubble} from 'react-native-gifted-chat';
 import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import ReceiverBubble from '../../components/ReceiverBubble';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
 
-const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findEarlierMessages}) => {
-
+const ChatWindow = ({
+  chatId,
+  messages,
+  user,
+  recepient,
+  navigation,
+  findEarlierMessages,
+  chatSettings
+}) => {
+  if (!recepient) return;
   // recepientId= Chat.findOne({_id: chatId}).participants.filter((p)=>(p.id!=user._id))[0].id;
   // recepientDetails= Users.findOne({_id:recepientId});
 
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
-  const [isAllLoaded, setIsAllLoaded] = useState(messages.length<13);
+  const [isAllLoaded, setIsAllLoaded] = useState(messages.length < 13);
   const [msgs, setMsgs] = useState([]);
-  const appendNewMessage = (newMessage) => {
-    setMsgs(previousMessages => GiftedChat.append(previousMessages, newMessage))
-  }
+  const appendNewMessage = newMessage => {
+    setMsgs(previousMessages =>
+      GiftedChat.append(previousMessages, newMessage),
+    );
+  };
 
-  
   useEffect(() => {
     setMsgs(
       messages.map(message => {
@@ -34,16 +45,28 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
     );
     navigation.setOptions({
       headerTitle: () => (
-        <TouchableOpacity style={styles.containerHead}
-        onPress={()=>{
-          navigation.navigate("View Profile",{user:recepient});
-        }}
-        >
+        <TouchableOpacity
+          style={styles.containerHead}
+          onPress={() => {
+            navigation.navigate('View Profile', {user: recepient});
+          }}>
           <Image
-            source={{uri: recepient.profile.image?recepient.profile.image.url:'https://via.placeholder.com/150'}}
+            source={{
+              uri: recepient.profile.image
+                ? recepient.profile.image.url
+                : 'https://via.placeholder.com/150',
+            }}
             style={styles.avatar}
           />
           <Text style={styles.title}>{recepient.profile.name}</Text>
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Chat Settings', {chatId, chatSettings});
+          }}>
+          <Icon name="settings" size={30} color="black" />
         </TouchableOpacity>
       ),
     });
@@ -55,9 +78,7 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
     const isCurrentUser = props.currentMessage.user._id === user._id;
 
     if (!isCurrentUser) {
-      return (
-        <ReceiverBubble data={props}/>
-      );
+      return <ReceiverBubble data={props} />;
     }
     return (
       <Bubble
@@ -80,7 +101,7 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
       const oldestMessage = msgs[msgs.length - 1];
       const earlierMessages = findEarlierMessages(oldestMessage);
       if (earlierMessages.length < 13) setIsAllLoaded(true);
-      
+
       setMsgs(prev => [
         ...prev,
         ...earlierMessages.map(message => ({
@@ -99,7 +120,7 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
 
   function onSend(newMessages = []) {
     //
-    const randomId= Math.floor(Math.random() * 100) + 1;
+    const randomId = Math.floor(Math.random() * 100) + 1;
     appendNewMessage({
       _id: randomId,
       text: newMessages[0].text,
@@ -115,14 +136,12 @@ const ChatWindow = ({chatId, messages, users, user, recepient, navigation, findE
       (error, result) => {
         if (error) {
         } else {
-          console.log("sent message: ", result);
+          console.log('sent message: ', result);
         }
       },
     );
-
   }
 
-  
   return (
     <View style={styles.container}>
       {/* <ChatWindowHeader name="Native" avatar='https://placeimg.com/140/140/any' /> */}
@@ -173,29 +192,33 @@ const styles = StyleSheet.create({
 export default withTracker(({route, navigation}) => {
   const chatId = route.params.chatId;
   const recepientId = route.params.recepientId;
+  // console.log('recepientId: ', recepientId);
   const ChatMessages = new Mongo.Collection('chatMessages');
   const messages = ChatMessages.find(
     {chatId: chatId},
     {sort: {createdAt: -1}, limit: 13},
   ).fetch();
-  const findEarlierMessages = (oldestMessage)=> (
+  const findEarlierMessages = oldestMessage =>
     ChatMessages.find(
       {chatId: chatId, createdAt: {$lt: oldestMessage.createdAt}},
       {sort: {createdAt: -1}, limit: 13},
-    ).fetch()
-  );
+    ).fetch();
   const user = Meteor.user();
   const users = Meteor.users;
   const recepient = users.findOne({_id: recepientId});
-  console.log("recepient: ", recepient);
+  const Settings = new Mongo.Collection('userSettings').findOne();
+  const chatSettings = Settings.chatSettings.find((ele)=>{
+    return ele.id===chatId;
+  });
+  // console.log('settings: ',chatSettings);
   return {
     chatId,
     messages,
     user,
-    users,
     navigation,
     recepient,
-    findEarlierMessages
+    findEarlierMessages,
+    chatSettings,
   };
 })(ChatWindow);
 

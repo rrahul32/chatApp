@@ -2,30 +2,26 @@
 
 import { Meteor } from "meteor/meteor";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
-import { addOrUpdateUserSettings } from "./modules";
+import { addOrUpdateChatSettings } from "./modules";
 import rateLimit from "../../lib/rate-limit";
 import SimpleSchema from "simpl-schema";
 import { AppConstants } from "../../config";
+import {chatSettingsSchema} from './index'
 
 const errorMessages = AppConstants.errorMessages;
 
-const insertOrUpdateUserSettings = new ValidatedMethod({
-  name: "insertOrUpdateUserSettings",
+const insertOrUpdateChatSettings = new ValidatedMethod({
+  name: "insertOrUpdateChatSettings",
   validate: new SimpleSchema({
-    id: {
-      type: String,
-    },
+    settings: {
+      type: chatSettingsSchema
+    }
   }).validator(),
   run(data) {
     // console.log(data);
     const thisUser = Meteor.user();
     if (thisUser) {
-      return addOrUpdateUserSettings(thisUser._id, {
-        chatSettings: [data],
-      }).catch((e) => {
-        console.log(e);
-        throw new Meteor.Error(errorMessages.forbidden);
-      });
+     addOrUpdateChatSettings(thisUser._id, data.settings.id, data.settings)
     } else {
       throw new Meteor.Error(errorMessages.forbidden);
     }
@@ -33,7 +29,7 @@ const insertOrUpdateUserSettings = new ValidatedMethod({
 });
 
 rateLimit({
-  methods: [insertOrUpdateUserSettings],
+  methods: [insertOrUpdateChatSettings],
   limit: 100,
   timeRange: 1000,
 });

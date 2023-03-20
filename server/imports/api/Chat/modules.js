@@ -5,6 +5,7 @@
 
 "use strict";
 
+import { addOrUpdateChatSettings } from "../UserSettings/modules";
 import Chat from "./";
 
 export const createChat = (id, userId) => {
@@ -22,6 +23,8 @@ export const createChat = (id, userId) => {
       ],
     });
     if (chatId) {
+      addOrUpdateChatSettings(id,chatId);
+      addOrUpdateChatSettings(userId,chatId);
       resolve(chatId);
     } else {
       reject(false);

@@ -39,7 +39,7 @@ function Home({ready, chatData, chatMessages, users, navigation}) {
                 contact.phoneNumbers.length > 0 &&
                 /^[a-zA-Z]/.test(contact.displayName),
             );
-            console.log('filteredContacts: ', filteredContacts[0]);
+            // console.log('filteredContacts: ', filteredContacts[0]);
             filteredContacts.forEach(contact => {
               contact.phoneNumbers.forEach(phoneNumber => {
                 // console.log(phoneNumber.number);
@@ -237,6 +237,7 @@ export default withTracker(() => {
 
   // // Get the user data
   const users = Meteor.users.find().fetch();
+  // console.log('users: ', users);
 
   const settings = new Mongo.Collection('userSettings');
 

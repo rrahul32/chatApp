@@ -210,9 +210,9 @@ function deleteProfileImage(user) {
 }
 
 function updateProfileImageId(userId, profileImageId) {
-  console.log("profileImageId: ", ProfileImages.findOne({
-    _id: profileImageId,
-  }));
+  // console.log("profileImageId: ", ProfileImages.findOne({
+  //   _id: profileImageId,
+  // }));
   return Meteor.users.update(
     {
       _id: userId,

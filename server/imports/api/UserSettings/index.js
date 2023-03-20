@@ -16,7 +16,7 @@ UserSettings.deny({
   update: () => true,
   remove: () => true,
 });
-const chatSettingsSchema = new SimpleSchema({
+export const chatSettingsSchema = new SimpleSchema({
     "id": {
         type: String,
         label: "Chat ID"

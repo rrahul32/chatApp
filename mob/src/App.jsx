@@ -37,6 +37,7 @@ const renderUI = user => {
       />
     );
   } else if (user.profile && user.profile.name) {
+    // console.log('user.profile.image.url: ', user.profile.image.url);
     return (
       <Stack.Group>
         <Stack.Screen
@@ -81,13 +82,6 @@ const renderUI = user => {
         <Stack.Screen
           name="Chat Window"
           component={ChatWindow}
-          options={{
-            headerRight: () => (
-              <TouchableOpacity>
-                <Icon name="settings" size={30} color="black" />
-              </TouchableOpacity>
-            ),
-          }}
         />
         <Stack.Screen name="Settings" component={AppSettings} />
         <Stack.Screen name="Edit Profile" component={EditProfile} />
