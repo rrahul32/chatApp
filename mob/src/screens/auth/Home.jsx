@@ -18,7 +18,7 @@ const ChatMessages = new Mongo.Collection('chatMessages');
 function Home({ready, chatData, chatMessages, users, navigation}) {
   const [searchResults, setSearchResults] = useState([]);
   const [dBContacts, setdBContacts] = useState([]);
-
+  
   let formattedContactList = [];
   let contactList = [];
 
@@ -240,7 +240,7 @@ export default withTracker(() => {
 
   const settings = new Mongo.Collection('userSettings');
 
-  console.log('settings: ', settings.find().fetch());
+  // console.log('settings: ', settings.find().fetch());
 
   // Return the data as props to the component
   return {

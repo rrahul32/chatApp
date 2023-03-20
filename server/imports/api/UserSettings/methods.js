@@ -9,8 +9,8 @@ import { AppConstants } from "../../config";
 
 const errorMessages = AppConstants.errorMessages;
 
-const insertOrUpdateChatSettings = new ValidatedMethod({
-  name: "insertOrUpdateChatSettings",
+const insertOrUpdateUserSettings = new ValidatedMethod({
+  name: "insertOrUpdateUserSettings",
   validate: new SimpleSchema({
     id: {
       type: String,
@@ -33,7 +33,7 @@ const insertOrUpdateChatSettings = new ValidatedMethod({
 });
 
 rateLimit({
-  methods: [insertOrUpdateChatSettings],
+  methods: [insertOrUpdateUserSettings],
   limit: 100,
   timeRange: 1000,
 });
