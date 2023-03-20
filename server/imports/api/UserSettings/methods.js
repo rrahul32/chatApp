@@ -10,7 +10,7 @@ import { AppConstants } from "../../config";
 const errorMessages = AppConstants.errorMessages;
 
 const insertOrUpdateChatSettings = new ValidatedMethod({
-  name: "insertOrUpdateAppSettings",
+  name: "insertOrUpdateChatSettings",
   validate: new SimpleSchema({
     id: {
       type: String,
