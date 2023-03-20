@@ -1,8 +1,3 @@
 {
-    "dev": true,
-    "private": {
-        "openai": {
-          "apiKey": "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"
-        }
-      }
+  "dev": true
 }
