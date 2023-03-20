@@ -6,6 +6,7 @@ import SimpleSchema from "simpl-schema";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Configuration, OpenAIApi } from "openai";
 import axios from 'axios';
+const api = require('../../../api.json');
 
 import rateLimit from "../../lib/rate-limit";
 import { AppConstants } from "../../config";
@@ -13,7 +14,7 @@ import { createChatMessage } from "./modules";
 
 const errorMessages = AppConstants.errorMessages;
 const configuration = new Configuration({
-  apiKey: Meteor.settings.private.openai.apiKey,
+  apiKey: api.openai.apiKey,
 });
 const openai = new OpenAIApi(configuration);
 
