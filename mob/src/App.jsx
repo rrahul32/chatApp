@@ -22,7 +22,7 @@ import EditProfile from './screens/auth/EditProfile';
 import ViewProfile from './screens/auth/ViewProfile';
 import ChatSettings from './screens/auth/ChatSettings';
 
-const SERVER_URL = "192.168.1.6:3000";
+const SERVER_URL = "192.168.35.154:3000";
 process.env.SERVER_URL= SERVER_URL;
 const Stack = createNativeStackNavigator();
 
