@@ -10,6 +10,7 @@ const api = require('../../../api.json');
 import rateLimit from "../../lib/rate-limit";
 import { AppConstants } from "../../config";
 import { createChatMessage } from "./modules";
+import { createScheduledChatMessage, getScheduledMessages } from "./jobManager";
 // console.log("api: ",api.openai.apiKey);
 
 const errorMessages = AppConstants.errorMessages;
@@ -34,6 +35,70 @@ const sendMessage = new ValidatedMethod({
     if (thisUser) {
       let user = thisUser;
           return createChatMessage(chatData.chatId, user._id, chatData.text).catch((e) => {
+        console.log(e);
+        // console.log();
+        throw new Meteor.Error(errorMessages.forbidden);
+      });
+    } else {
+      throw new Meteor.Error(errorMessages.forbidden);
+    }
+  }
+});
+
+const scheduleMessage = new ValidatedMethod({
+  name: "scheduleMessage",
+  validate: new SimpleSchema({
+    id: {
+      type: String,
+      optional: true
+    },
+    "chatId": {
+      type: String
+    },
+    "text": {
+      type: String
+    },
+    "scheduledDate": {
+      type: Date
+    }
+  }).validator(),
+  run(chatData) {
+    // console.log(chatData);
+    const thisUser = Meteor.user();
+    if (thisUser) {
+      let user = thisUser;
+      return createScheduledChatMessage(chatData.chatId, user._id, chatData.text, chatData.scheduledDate, id).catch((e) => {
+        console.log(e);
+        // console.log();
+        throw new Meteor.Error(errorMessages.forbidden);
+      });
+    } else {
+      throw new Meteor.Error(errorMessages.forbidden);
+    }
+  }
+});getScheduledMessages
+
+const getScheduleMessagesMethod = new ValidatedMethod({
+  name: "getScheduleMessage",
+  validate: new SimpleSchema({
+    "chatId": {
+      type: String
+    }
+  }).validator(),
+  run(chatData) {
+    // console.log(chatData);
+    const thisUser = Meteor.user();
+    if (thisUser) {
+      let user = thisUser;
+      return getScheduledMessages(chatData.chatId, user._id).then(items => {
+        return items.map((item) => {
+          return {
+            id: item._id,
+            message: item.data.message,
+            scheduledDate: item.after
+          };
+        })
+      }).catch((e) => {
         console.log(e);
         // console.log();
         throw new Meteor.Error(errorMessages.forbidden);
@@ -148,6 +213,8 @@ const emotionDetectionFromMessage = new ValidatedMethod({
 rateLimit({
   methods: [
     sendMessage,
+    scheduleMessage,
+    getScheduleMessagesMethod,
     translateMessage,
     emotionDetectionFromMessage
   ],

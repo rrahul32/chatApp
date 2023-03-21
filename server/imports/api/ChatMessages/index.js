@@ -6,10 +6,12 @@
 "use strict";
 
 import { Mongo } from "meteor/mongo";
+import { JobCollection } from "meteor/vsivsi:job-collection";
 
 import chatMessageSchema from "./schema";
 
 const ChatMessages = new Mongo.Collection("chatMessages");
+export const ChatMessageJobs = JobCollection("chatMessageJobs"); // eslint-disable-line new-cap
 
 export default ChatMessages;
 
