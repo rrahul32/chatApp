@@ -24,17 +24,16 @@ const ChatWindow = ({
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [isAllLoaded, setIsAllLoaded] = useState(messages.length < 13);
   const [msgs, setMsgs] = useState([]);
-  const [translation, setTranslation] = useState(false);
-  const [language, setLanguage] = useState(null);
+  // const [translation, setTranslation] = useState(chatSettings.translationEnabled);
+  // const [language, setLanguage] = useState(null);
+
   const appendNewMessage = newMessage => {
     setMsgs(previousMessages =>
       GiftedChat.append(previousMessages, newMessage),
     );
   };
-const activateTranslation = (translation, language)=>{
-  setTranslation(translation);
-  setLanguage(language);
-}
+  const translation = chatSettings.translationEnabled;
+  const language = chatSettings.translationLanguage;
   useEffect(() => {
     setMsgs(
       messages.map(message => {
@@ -69,7 +68,7 @@ const activateTranslation = (translation, language)=>{
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('Chat Settings', {chatId, chatSettings, activateTranslation});
+            navigation.navigate('Chat Settings', {chatId});
           }}>
           <Icon name="settings" size={30} color="black" />
         </TouchableOpacity>
@@ -83,7 +82,7 @@ const activateTranslation = (translation, language)=>{
     const isCurrentUser = props.currentMessage.user._id === user._id;
 
     if (!isCurrentUser) {
-      return <ReceiverBubble data={props} translation={translation} language={language} />;
+      return <ReceiverBubble data={props} chatId={chatId}/>;
     }
     return (
       <Bubble
