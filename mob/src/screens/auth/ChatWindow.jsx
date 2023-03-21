@@ -24,12 +24,17 @@ const ChatWindow = ({
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [isAllLoaded, setIsAllLoaded] = useState(messages.length < 13);
   const [msgs, setMsgs] = useState([]);
+  const [translation, setTranslation] = useState(false);
+  const [language, setLanguage] = useState(null);
   const appendNewMessage = newMessage => {
     setMsgs(previousMessages =>
       GiftedChat.append(previousMessages, newMessage),
     );
   };
-
+const activateTranslation = (translation, language)=>{
+  setTranslation(translation);
+  setLanguage(language);
+}
   useEffect(() => {
     setMsgs(
       messages.map(message => {
@@ -64,7 +69,7 @@ const ChatWindow = ({
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('Chat Settings', {chatId, chatSettings});
+            navigation.navigate('Chat Settings', {chatId, chatSettings, activateTranslation});
           }}>
           <Icon name="settings" size={30} color="black" />
         </TouchableOpacity>
@@ -78,7 +83,7 @@ const ChatWindow = ({
     const isCurrentUser = props.currentMessage.user._id === user._id;
 
     if (!isCurrentUser) {
-      return <ReceiverBubble data={props} />;
+      return <ReceiverBubble data={props} translation={translation} language={language} />;
     }
     return (
       <Bubble

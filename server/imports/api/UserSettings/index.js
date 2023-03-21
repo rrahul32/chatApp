@@ -21,15 +21,16 @@ export const chatSettingsSchema = new SimpleSchema({
         type: String,
         label: "Chat ID"
     },
-    "translateionEnabled": {
+    "translationEnabled": {
         type: Boolean,
         label: "Translation Enabled",
         defaultValue: false
     },
-    "translateionLanguage": {
+    "translationLanguage": {
         type: String,
         label: "Translation Language",
-        optional: true
+        optional: true,
+        defaultValue: 'ml'
     },
     "emotionDetection": {
         type: Boolean,

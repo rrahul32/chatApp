@@ -5,11 +5,12 @@ import {Bubble} from 'react-native-gifted-chat';
 import Meteor from '@meteorrn/core';
 
 
-const ReceiverBubble = ({data}) => {
+const ReceiverBubble = ({data, translation, language}) => {
   const [msgData, setmsgData] = useState(data);
   const [translating, setTranslating] = useState(false);
   const [translated, setTranslated] = useState(false);
-  const translateMessage= (message,language)=>{
+
+  const translateMessage= (message)=>{
     Meteor.call(
       'translateMessage',
       {text: message, language: language},
@@ -42,6 +43,7 @@ const ReceiverBubble = ({data}) => {
           },
         }}
       />
+      {translation &&
       <View style={{position: 'absolute', right: 20, top: 10}}>
         {!translating && !translated?
         <TouchableOpacity
@@ -59,6 +61,7 @@ const ReceiverBubble = ({data}) => {
         <Text style={{color: 'black'}}>Translated</Text>
     }
       </View>
+          }
     </View>
   );
 };
