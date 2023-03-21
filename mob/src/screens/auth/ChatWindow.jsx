@@ -89,6 +89,9 @@ useEffect(() => {
     },(error, result)=>{
       if(error){
         console.log(error);
+        alert("Network Error");
+        setEmotion('neutral');
+        setIsDetecting(false);
       }
       else
       {
