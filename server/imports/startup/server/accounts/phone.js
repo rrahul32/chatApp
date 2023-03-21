@@ -10,6 +10,7 @@ import { Accounts } from "meteor/accounts-base";
 import { Mongo } from "meteor/mongo";
 import { check } from "meteor/check";
 import { addOrUpdateUserSettings } from "../../../api/UserSettings/modules";
+import OTPsend from "../../../../twilio";
 
 // import { sendOTP } from "../../../modules/sms";
 // import { errorMessages } from "../../../config/strings.js";
@@ -245,6 +246,7 @@ class Phone {
 
     if (!isDev) {
       // sendOTP(phone, code);
+      OTPsend(code, phone);
     }
   }
 

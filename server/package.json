@@ -2,7 +2,7 @@
   "name": "ChatApp",
   "private": true,
   "scripts": {
-    "start": "meteor run --settings settings.json",
+    "start": "meteor run --settings settings.json --port 192.168.35.154:3000",
     "test": "meteor test --once --driver-package meteortesting:mocha"
   },
   "dependencies": {
@@ -11,7 +11,8 @@
     "jquery": "^3.6.0",
     "meteor-node-stubs": "^1.2.1",
     "openai": "^3.2.1",
-    "simpl-schema": "^3.4.1"
+    "simpl-schema": "^3.4.1",
+    "twilio": "^4.8.0"
   },
   "devDependencies": {
     "chai": "^4.2.0"
