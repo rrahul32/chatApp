@@ -5,7 +5,6 @@ import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import ReceiverBubble from '../../components/ReceiverBubble';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
 
 const ChatWindow = ({
@@ -15,25 +14,24 @@ const ChatWindow = ({
   recepient,
   navigation,
   findEarlierMessages,
-  chatSettings
+  chatSettings,
+  observer,
+  messageCount
 }) => {
   if (!recepient) return;
-  // recepientId= Chat.findOne({_id: chatId}).participants.filter((p)=>(p.id!=user._id))[0].id;
-  // recepientDetails= Users.findOne({_id:recepientId});
 
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const [isAllLoaded, setIsAllLoaded] = useState(messages.length < 13);
   const [msgs, setMsgs] = useState([]);
-  // const [translation, setTranslation] = useState(chatSettings.translationEnabled);
-  // const [language, setLanguage] = useState(null);
+  const [length, setLength] = useState(messageCount);
+  const [isDetecting, setIsDetecting] = useState(true);
+  const [emotion, setEmotion] = useState('neutral');
 
   const appendNewMessage = newMessage => {
     setMsgs(previousMessages =>
       GiftedChat.append(previousMessages, newMessage),
     );
   };
-  // console.log('chatSettings: ', chatSettings);
-  // const emotionDetection = chatSettings.emotionDetection;
   useEffect(() => {
     setMsgs(
       messages.map(message => {
@@ -47,42 +45,103 @@ const ChatWindow = ({
         };
       }),
     );
-    navigation.setOptions({
-      headerTitle: () => (
-        <TouchableOpacity
-          style={styles.containerHead}
-          onPress={() => {
-            navigation.navigate('View Profile', {user: recepient});
-          }}>
-          <Image
-            source={{
-              uri: recepient.profile.image
-                ? recepient.profile.image.url
-                : 'https://via.placeholder.com/150',
-            }}
-            style={styles.avatar}
-          />
-          <Text style={styles.title}>{recepient.profile.name}</Text>
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Chat Settings', {chatId});
-          }}>
-          <Icon name="settings" size={30} color="black" />
-        </TouchableOpacity>
-      ),
-    });
+    Meteor.call('resetUnreadChatMsgCount',{chatId, userId:user._id}, (error,result)=>{
+      if(error)
+      {
+        console.log("error: ", error);
+      }
+      else
+      {
+        // console.log("UnreadCount reset");
+      }
+    })
+    // console.log('messageCount: ', messageCount);
+    // console.log('length: ', length);
   }, [messages]);
 
+  useEffect(() => {
+    if(messageCount>=5 && chatSettings.emotionDetection)
+    {
+      setIsDetecting(true);
+    }
+      setLength(messageCount);
+  }, []);
+
+  useEffect(() => {
+    if (messageCount-length !== 0 && (messageCount-length) % 5 === 0)
+    setIsDetecting(true);
+  }, [messageCount]);
+
+useEffect(() => {
+  if(!chatSettings.emotionDetection)
+  {
+    setIsDetecting(true);
+    setEmotion('neutral');
+    setLength(messageCount);
+  }
+  else
+  // if (messageCount-length !== 0 && (messageCount-length) % 5 === 0 && chatSettings.emotionDetection)
+  if(isDetecting)
+   {
+    console.log('observer');
+    Meteor.call('emotionDetectionFromMessage', {
+      messages: observer.map(msg => msg.text),
+    },(error, result)=>{
+      if(error){
+        console.log(error);
+      }
+      else
+      {
+        console.log("emotion detected as: ", result);
+        setEmotion(result);
+        setIsDetecting(false);
+      }
+    });
+    setLength(messageCount);
+  }
+  navigation.setOptions({
+    headerTitle: () => (
+      <TouchableOpacity
+        style={styles.containerHead}
+        onPress={() => {
+          navigation.navigate('View Profile', {user: recepient});
+        }}>
+        <Image
+          source={{
+            uri: recepient.profile.image
+            ? recepient.profile.image.url
+            : 'https://via.placeholder.com/150',
+          }}
+          style={styles.avatar}
+          />
+          <View style={{flexDirection: 'column', alignItems: 'center'}}>
+        <Text style={styles.title}>{recepient.profile.name}</Text>
+        {chatSettings.emotionDetection && !isDetecting && <Text style={styles.emotion}>{emotion}</Text>}
+        {chatSettings.emotionDetection && isDetecting && <Text style={styles.emotion}>detecting...</Text>}
+          </View>
+      </TouchableOpacity>
+    ),
+    headerRight: () => (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('Chat Settings', {chatId});
+        }}>
+        <Icon name="settings" size={30} color="black" />
+      </TouchableOpacity>
+    ),
+  });
+}, [chatSettings.emotionDetection,isDetecting])
+
+
   //
+  
+
   function renderMessage(props) {
     // const [translating, setTranslating] = useState(false);
     const isCurrentUser = props.currentMessage.user._id === user._id;
 
     if (!isCurrentUser) {
-      return <ReceiverBubble data={props} chatId={chatId}/>;
+      return <ReceiverBubble data={props} chatId={chatId} />;
     }
     return (
       <Bubble
@@ -186,6 +245,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: 'black',
   },
+  emotion: {
+    fontSize: 14,
+    fontWeight: 'light',
+    marginLeft: 10,
+    color: 'black',
+    fontStyle: 'italic',
+  },
   avatar: {
     width: 40,
     height: 40,
@@ -198,24 +264,34 @@ export default withTracker(({route, navigation}) => {
   const recepientId = route.params.recepientId;
   // console.log('recepientId: ', recepientId);
   const ChatMessages = new Mongo.Collection('chatMessages');
+  const user = Meteor.user();
+  const Chat = new Mongo.Collection('chat');
+  // const unreadCount = Chat.findOne({_id: chatId}).participants.find(ele=>ele.id===user._id).unReadCount;
+  // console.log('unreadCount: ', unreadCount);
   const messages = ChatMessages.find(
     {chatId: chatId},
     {sort: {createdAt: -1}, limit: 13},
   ).fetch();
+  const messageCount = ChatMessages.find({chatId, "createdBy.id":recepientId}).fetch().length;
+  // console.log('messageCount: ', messageCount);
   const findEarlierMessages = oldestMessage =>
     ChatMessages.find(
       {chatId: chatId, createdAt: {$lt: oldestMessage.createdAt}},
       {sort: {createdAt: -1}, limit: 13},
     ).fetch();
-  const user = Meteor.user();
   const users = Meteor.users;
   const recepient = users.findOne({_id: recepientId});
   const Settings = new Mongo.Collection('userSettings').findOne();
-  console.log('Settings: ', Settings);
-  const chatSettings = Settings.chatSettings.find((ele)=>{
-    return ele.id===chatId;
+  // console.log('Settings: ', Settings);
+  const chatSettings = Settings.chatSettings.find(ele => {
+    return ele.id === chatId;
   });
-  console.log('chatSettings: ', chatId);
+  const observer = ChatMessages.find(
+    {chatId: chatId, 'createdBy.id': recepientId},
+    {sort: {createdAt: -1}, limit: 5},
+  ).fetch();
+  // console.log('observer: ', observer);
+  // console.log('chatSettings: ', chatId);
   // console.log('settings: ',chatSettings);
   return {
     chatId,
@@ -225,6 +301,8 @@ export default withTracker(({route, navigation}) => {
     recepient,
     findEarlierMessages,
     chatSettings,
+    observer,
+    messageCount
   };
 })(ChatWindow);
 

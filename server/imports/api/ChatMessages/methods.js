@@ -7,10 +7,10 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import { Configuration, OpenAIApi } from "openai";
 import axios from 'axios';
 const api = require('../../../api.json');
-
 import rateLimit from "../../lib/rate-limit";
 import { AppConstants } from "../../config";
 import { createChatMessage } from "./modules";
+// console.log("api: ",api.openai.apiKey);
 
 const errorMessages = AppConstants.errorMessages;
 const configuration = new Configuration({
@@ -99,10 +99,57 @@ const translateMessage = new ValidatedMethod({
   }
 });
 
+const emotionDetectionFromMessage = new ValidatedMethod({
+  name: "emotionDetectionFromMessage",
+  validate: new SimpleSchema({
+    "messages": {
+      type: Array
+    },
+    "messages.$": {
+      type: String
+    },
+  }).validator(),
+  async run(data) {
+    // console.log(chatData);
+    const thisUser = Meteor.user();
+    if (thisUser) {
+      const messages = data.messages;
+      console.log('messages: ', messages);
+      const promptHeader = `The following message was sent by a person. Identify the tone of the message. Classify the tone as happy, sad, angry, frustrated or neutral. Reply in a single word:\n`;
+      let combinedMessages="";
+      // messages.forEach((msg)=>{
+      //   combinedMessages = combinedMessages+ `${msg} `;
+      // })
+      for(let i=messages.length-1;i>=0;i--)
+      combinedMessages = combinedMessages+ `${messages[i]}. `;
+      console.log(combinedMessages);
+      const promptFooter="\nClassify the tone as happy, sad, angry, frustrated or neutral. Reply in a single word."
+      const completions = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{
+          role: "user", 
+          content: promptHeader+combinedMessages,
+      }],
+      });
+      const reply= completions.data.choices[0].message.content.trim().replace(/\s+/g, '').replace(/[^\w\s]/gi, '');
+      console.log("reply: ",reply);
+      
+      return reply.toLowerCase();
+      // const translation = completions.data.choices[0].message.content.replace(/^\n+|\n+$/g, "");
+  
+      // return translation;
+
+    } else {
+      throw new Meteor.Error(errorMessages.forbidden);
+    }
+  }
+});
+
 rateLimit({
   methods: [
     sendMessage,
-    translateMessage
+    translateMessage,
+    emotionDetectionFromMessage
   ],
   limit: 100,
   timeRange: 1000
