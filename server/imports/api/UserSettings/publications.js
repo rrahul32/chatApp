@@ -1,6 +1,6 @@
 import { Meteor } from "meteor/meteor";
 import UserSettings from ".";
-
+//
 Meteor.publish(null, function() {
     const thisUser = Meteor.user();
     if (!thisUser) {

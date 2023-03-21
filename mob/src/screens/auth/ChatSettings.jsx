@@ -144,11 +144,12 @@ const styles = StyleSheet.create({
 
 export default withTracker(({route, navigation}) => {
   const chatId = route.params.chatId;
+  console.log('chatId: ', chatId);
   const Settings = new Mongo.Collection('userSettings').findOne();
   const chatSettings = Settings.chatSettings.find((ele)=>{
     return ele.id===chatId;
   });
-  // console.log('settings: ',chatSettings);
+  console.log('settings: ',chatSettings);
   return {
     navigation,
     chatSettings,

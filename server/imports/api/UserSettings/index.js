@@ -47,7 +47,8 @@ const userSettingsSchema = new SimpleSchema({
     "chatSettings": {
         type: Array,
         optional: true,
-        label: "Chat Settings"
+        label: "Chat Settings",
+        defaultValue: []
     },
     "chatSettings.$": {
         type: chatSettingsSchema,

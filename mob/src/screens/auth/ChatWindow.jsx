@@ -32,8 +32,8 @@ const ChatWindow = ({
       GiftedChat.append(previousMessages, newMessage),
     );
   };
-  const translation = chatSettings.translationEnabled;
-  const language = chatSettings.translationLanguage;
+  // console.log('chatSettings: ', chatSettings);
+  // const emotionDetection = chatSettings.emotionDetection;
   useEffect(() => {
     setMsgs(
       messages.map(message => {
@@ -211,9 +211,11 @@ export default withTracker(({route, navigation}) => {
   const users = Meteor.users;
   const recepient = users.findOne({_id: recepientId});
   const Settings = new Mongo.Collection('userSettings').findOne();
+  console.log('Settings: ', Settings);
   const chatSettings = Settings.chatSettings.find((ele)=>{
     return ele.id===chatId;
   });
+  console.log('chatSettings: ', chatId);
   // console.log('settings: ',chatSettings);
   return {
     chatId,

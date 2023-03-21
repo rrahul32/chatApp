@@ -13,16 +13,27 @@ export const addOrUpdateUserSettings = (userId, data = {}) => {
   });
 };
 export const addOrUpdateChatSettings = (userId, chatId, data = {}) => {
-  // eslint-disable-line no-undef
-  let value = {};
-  data.id = chatId;
-  value.chatSettings = [data];
-  addOrUpdateUserSettings(userId, value).then(
-    (result) => {
-      console.log("resultC: ", result);
-    },
-    (error) => {
-      console.log("errorC:  ", error);
+  data.id=chatId;
+  const userSettings = UserSettings.findOne({userId});
+  console.log('userSettings: ', userSettings);
+  const chatSettingsIndex = userSettings.chatSettings.findIndex(cs => cs.id === chatId);
+  console.log('chatSettingsIndex: ', chatSettingsIndex);
+  console.log('data: ', data);
+    if (chatSettingsIndex === -1) {
+      // If the chatSettings entry does not exist, add it to the user's chatSettings array
+      UserSettings.update({userId}, {
+        $push: {
+          'chatSettings': data
+        }
+      });
+    } else {
+      // If the chatSettings entry already exists, update its settings
+      const setModifier = {};
+      setModifier[`chatSettings.${chatSettingsIndex}`] = data;
+      console.log('setModifier: ', setModifier);
+      const result =UserSettings.update({userId}, {
+        $set: setModifier
+      });
+      console.log('result: ', result);
     }
-  );
 };
