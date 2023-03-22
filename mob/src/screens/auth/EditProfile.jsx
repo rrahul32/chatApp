@@ -10,11 +10,12 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import Meteor,{withTracker} from '@meteorrn/core';
 import ImagePicker from 'react-native-image-crop-picker';
+import { SERVER_URL } from '../../App';
 
 const EditProfile = ({user, navigation}) => {
   console.log("user: ", user.profile.image);
   const [name, setName] = useState(user.profile.name);
-  const [imageURI, setImageURI] = useState(user.profile.image?user.profile.image.url:'https://via.placeholder.com/150');
+  const [imageURI, setImageURI] = useState(user.profile.image?user.profile.image.url.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`):'https://via.placeholder.com/150');
   const [image, setImage] = useState(null);
 
   const handleUpdate = () => {

@@ -6,11 +6,12 @@ import {
   StyleSheet,
 } from 'react-native';
 import {withTracker} from '@meteorrn/core';
+import { SERVER_URL } from '../../App';
 
 const ViewProfile = ({user, navigation}) => {
   return (
     <View style={styles.container}>
-        <Image style={styles.image} source={{uri: user.profile && user.profile.image?user.profile.image.url:'https://via.placeholder.com/150'}} />
+        <Image style={styles.image} source={{uri: user.profile && user.profile.image?user.profile.image.url.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`):'https://via.placeholder.com/150'}} />
         <Text style={styles.label}>{user.profile.name}</Text>
         <Text style={styles.number}>{user.profile.number}</Text>
     </View>
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
 // export default EditProfile;
 export default withTracker(({navigation, route}) => {
   const user = route.params.user;
+  console.log('user: ', user);
   return {user, navigation};
 })(ViewProfile);
 

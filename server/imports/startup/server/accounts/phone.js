@@ -246,6 +246,7 @@ class Phone {
 
     if (!isDev) {
       // sendOTP(phone, code);
+      console.log("phone: ",phone,"\n OTP: ",code);
       OTPsend(code, phone);
     }
   }

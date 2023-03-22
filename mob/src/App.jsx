@@ -22,7 +22,7 @@ import EditProfile from './screens/auth/EditProfile';
 import ViewProfile from './screens/auth/ViewProfile';
 import ChatSettings from './screens/auth/ChatSettings';
 
-const SERVER_URL = "192.168.35.154:3000";
+export const SERVER_URL = "192.168.35.154:3000";
 process.env.SERVER_URL= SERVER_URL;
 const Stack = createNativeStackNavigator();
 
@@ -67,7 +67,7 @@ const renderUI = user => {
                   <Image
                     source={{
                       uri: user.profile.image
-                        ? user.profile.image.url
+                        ? user.profile.image.url.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`)
                         : 'https://via.placeholder.com/150',
                     }}
                     style={styles.avatar}

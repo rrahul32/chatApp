@@ -10,6 +10,7 @@ import {
   Share
 } from 'react-native';
 import Meteor from '@meteorrn/core';
+import { SERVER_URL } from '../../App';
 
 const AddChat = ({navigation,route}) => {
   // console.log("route: ", route)
@@ -65,7 +66,7 @@ const AddChat = ({navigation,route}) => {
         style={styles.resultItem}
         onPress={() => handleStartChat(item)}>
       <Image
-          source={{uri: item.picture?item.picture:'https://via.placeholder.com/150'}}
+          source={{uri: item.picture?item.picture.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`):'https://via.placeholder.com/150'}}
           style={styles.avatar}
           />
         <View style={styles.detail}>

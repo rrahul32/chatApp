@@ -1,11 +1,12 @@
 import {StyleSheet, Text, View, Image} from 'react-native';
 import React from 'react';
+import { SERVER_URL } from '../App';
 
 const ChatHead = ({lastMessage, recepient}) => {
   return (
       <View style={styles.item}>
         <Image
-          source={{uri: recepient.profile.image?recepient.profile.image.url:'https://via.placeholder.com/150'}}
+          source={{uri: recepient.profile.image?recepient.profile.image.url.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`):'https://via.placeholder.com/150'}}
           style={styles.avatar}
         />
         <View style={styles.itemContent}>

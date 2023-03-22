@@ -178,21 +178,8 @@ function Home({ready, chatData, chatMessages, users, navigation}) {
         renderItem={renderItem}
         keyExtractor={item => item._id}
         style={styles.list}
-        // ListFooterComponent={renderListFooter}
-        // ListFooterComponentStyle={{ position: 'absolute', bottom: 20, right: 20 }}
       />
       <View style={{position: 'absolute', bottom: 20, right: 20}}>
-        {/* <TouchableOpacity
-          style={{
-            backgroundColor: 'green',
-            borderRadius: 25,
-            width: 50,
-            height: 50,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={{color: 'black', fontSize: 30}}>+</Text>
-        </TouchableOpacity> */}
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Add Chat', {contacts: [...dBContacts,...searchResults]});
@@ -241,7 +228,6 @@ export default withTracker(() => {
 
   const settings = new Mongo.Collection('userSettings');
 
-  // console.log('settings: ', settings.find().fetch());
 
   // Return the data as props to the component
   return {

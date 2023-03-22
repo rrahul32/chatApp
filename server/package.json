@@ -2,7 +2,7 @@
   "name": "ChatApp",
   "private": true,
   "scripts": {
-    "start": "meteor run --settings settings.json --port 192.168.35.154:3000",
+    "start": "meteor run --settings settings.json",
     "test": "meteor test --once --driver-package meteortesting:mocha"
   },
   "dependencies": {

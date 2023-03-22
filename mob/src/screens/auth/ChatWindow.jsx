@@ -11,8 +11,10 @@ import {
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import ReceiverBubble from '../../components/ReceiverBubble';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {default as Icon2} from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import DatePicker from 'react-native-date-picker';
+import { SERVER_URL } from '../../App';
 
 
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
@@ -126,7 +128,7 @@ const ChatWindow = ({
           <Image
             source={{
               uri: recepient.profile.image
-                ? recepient.profile.image.url
+                ? recepient.profile.image.url.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`)
                 : 'https://via.placeholder.com/150',
             }}
             style={styles.avatar}
@@ -143,7 +145,7 @@ const ChatWindow = ({
         </TouchableOpacity>
       ),
       headerRight: () => (
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'row', gap: 20}}>
           <TouchableOpacity
           onPress={()=>{
             setMinDate(new Date());
@@ -152,7 +154,7 @@ const ChatWindow = ({
             setShowPopup(true);
           }}
           >
-            <Icon name="settings" size={30} color="black" />
+            <Icon2 name="message-text-clock-outline" size={30} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
