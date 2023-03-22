@@ -1,9 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import {GiftedChat, Bubble} from 'react-native-gifted-chat';
-import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  TextInput
+} from 'react-native';
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import ReceiverBubble from '../../components/ReceiverBubble';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Modal from 'react-native-modal';
+import DatePicker from 'react-native-date-picker';
+
 
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
 
@@ -16,7 +26,7 @@ const ChatWindow = ({
   findEarlierMessages,
   chatSettings,
   observer,
-  messageCount
+  messageCount,
 }) => {
   if (!recepient) return;
 
@@ -26,6 +36,10 @@ const ChatWindow = ({
   const [length, setLength] = useState(messageCount);
   const [isDetecting, setIsDetecting] = useState(true);
   const [emotion, setEmotion] = useState('neutral');
+  const [message, setMessage] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [minDate, setMinDate] = useState(new Date());
+  const [showPopup, setShowPopup] = useState(false);
 
   const appendNewMessage = newMessage => {
     setMsgs(previousMessages =>
@@ -45,99 +59,138 @@ const ChatWindow = ({
         };
       }),
     );
-    Meteor.call('resetUnreadChatMsgCount',{chatId, userId:user._id}, (error,result)=>{
-      if(error)
-      {
-        console.log("error: ", error);
-      }
-      else
-      {
-        // console.log("UnreadCount reset");
-      }
-    })
+    Meteor.call(
+      'resetUnreadChatMsgCount',
+      {chatId, userId: user._id},
+      (error, result) => {
+        if (error) {
+          console.log('error: ', error);
+        } else {
+          // console.log("UnreadCount reset");
+        }
+      },
+    );
     // console.log('messageCount: ', messageCount);
     // console.log('length: ', length);
   }, [messages]);
 
   useEffect(() => {
-    if(messageCount>=5 && chatSettings.emotionDetection)
-    {
+    if (messageCount >= 5 && chatSettings.emotionDetection) {
       setIsDetecting(true);
     }
-      setLength(messageCount);
+    setLength(messageCount);
   }, []);
 
   useEffect(() => {
-    if (messageCount-length !== 0 && (messageCount-length) % 5 === 0)
-    setIsDetecting(true);
+    if (messageCount - length !== 0 && (messageCount - length) % 5 === 0)
+      setIsDetecting(true);
   }, [messageCount]);
 
-useEffect(() => {
-  if(!chatSettings.emotionDetection)
-  {
-    setIsDetecting(true);
-    setEmotion('neutral');
-    setLength(messageCount);
-  }
-  else
-  // if (messageCount-length !== 0 && (messageCount-length) % 5 === 0 && chatSettings.emotionDetection)
-  if(isDetecting)
-   {
-    console.log('observer');
-    Meteor.call('emotionDetectionFromMessage', {
-      messages: observer.map(msg => msg.text),
-    },(error, result)=>{
-      if(error){
-        console.log(error);
-        alert("Network Error");
-        setEmotion('neutral');
-        setIsDetecting(false);
-      }
-      else
-      {
-        console.log("emotion detected as: ", result);
-        setEmotion(result);
-        setIsDetecting(false);
-      }
-    });
-    setLength(messageCount);
-  }
-  navigation.setOptions({
-    headerTitle: () => (
-      <TouchableOpacity
-        style={styles.containerHead}
-        onPress={() => {
-          navigation.navigate('View Profile', {user: recepient});
-        }}>
-        <Image
-          source={{
-            uri: recepient.profile.image
-            ? recepient.profile.image.url
-            : 'https://via.placeholder.com/150',
-          }}
-          style={styles.avatar}
+  useEffect(() => {
+    if (!chatSettings.emotionDetection) {
+      setIsDetecting(true);
+      setEmotion('neutral');
+      setLength(messageCount);
+    }
+    // if (messageCount-length !== 0 && (messageCount-length) % 5 === 0 && chatSettings.emotionDetection)
+    else if (isDetecting) {
+      console.log('observer');
+      Meteor.call(
+        'emotionDetectionFromMessage',
+        {
+          messages: observer.map(msg => msg.text),
+        },
+        (error, result) => {
+          if (error) {
+            console.log(error);
+            alert('Network Error');
+            setEmotion('neutral');
+            setIsDetecting(false);
+          } else {
+            console.log('emotion detected as: ', result);
+            setEmotion(result);
+            setIsDetecting(false);
+          }
+        },
+      );
+      setLength(messageCount);
+    }
+
+    navigation.setOptions({
+      headerTitle: () => (
+        <TouchableOpacity
+          style={styles.containerHead}
+          onPress={() => {
+            navigation.navigate('View Profile', {user: recepient});
+          }}>
+          <Image
+            source={{
+              uri: recepient.profile.image
+                ? recepient.profile.image.url
+                : 'https://via.placeholder.com/150',
+            }}
+            style={styles.avatar}
           />
           <View style={{flexDirection: 'column', alignItems: 'center'}}>
-        <Text style={styles.title}>{recepient.profile.name}</Text>
-        {chatSettings.emotionDetection && !isDetecting && <Text style={styles.emotion}>{emotion}</Text>}
-        {chatSettings.emotionDetection && isDetecting && <Text style={styles.emotion}>detecting...</Text>}
+            <Text style={styles.title}>{recepient.profile.name}</Text>
+            {chatSettings.emotionDetection && !isDetecting && (
+              <Text style={styles.emotion}>{emotion}</Text>
+            )}
+            {chatSettings.emotionDetection && isDetecting && (
+              <Text style={styles.emotion}>detecting...</Text>
+            )}
           </View>
-      </TouchableOpacity>
-    ),
-    headerRight: () => (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('Chat Settings', {chatId});
-        }}>
-        <Icon name="settings" size={30} color="black" />
-      </TouchableOpacity>
-    ),
-  });
-}, [chatSettings.emotionDetection,isDetecting])
-
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <TouchableOpacity
+          onPress={()=>{
+            setMinDate(new Date());
+            setDate(new Date());
+            setMessage('');
+            setShowPopup(true);
+          }}
+          >
+            <Icon name="settings" size={30} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Chat Settings', {chatId});
+            }}>
+            <Icon name="settings" size={30} color="black" />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [chatSettings.emotionDetection, isDetecting]);
 
   //
-  
+  const handleSubmit = () => {
+    // Do something with message and date
+    setShowPopup(false);
+    if(message!='' && date>new Date()){
+      Meteor.call('scheduleMessage', {chatId, text: message, scheduledDate:date}, (error,result)=>{
+        if(error)
+        {
+          console.log(error);
+          alert("Server error");
+        }
+        else
+        {
+          console.log(result);
+          alert("Success");
+        }
+      })
+      console.log(message, date);
+      // Close the popup
+    }
+    else{
+        alert("Please check the date or message.");
+    }
+    setMessage('');
+    setDate(new Date());
+  }
 
   function renderMessage(props) {
     // const [translating, setTranslating] = useState(false);
@@ -210,6 +263,35 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
+      <Modal
+        isVisible={showPopup}
+        onBackdropPress={() => setShowPopup(false)}
+        onBackButtonPress={() => setShowPopup(false)}
+      >
+        <View style={{ padding: 20 }}>
+          {/* Message input */}
+          <TextInput
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Enter message"
+            style={{ marginBottom: 10 }}
+          />
+
+          {/* Date picker */}
+          <DatePicker
+            date={date}
+            onDateChange={setDate}
+            mode="datetime"
+            androidVariant="nativeAndroid"
+            minimumDate={minDate}
+          />
+
+          {/* Submit button */}
+          <TouchableOpacity onPress={handleSubmit}>
+            <Text style={{ color: 'white' }}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       {/* <ChatWindowHeader name="Native" avatar='https://placeimg.com/140/140/any' /> */}
       <GiftedChat
         textInputStyle={styles.input}
@@ -260,6 +342,31 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
   },
+  modal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  content: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  message: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  date: {
+    fontSize: 14,
+  },
+  close: {
+    fontSize: 18,
+    color: '#007AFF',
+    marginTop: 10,
+  },
 });
 
 export default withTracker(({route, navigation}) => {
@@ -275,7 +382,10 @@ export default withTracker(({route, navigation}) => {
     {chatId: chatId},
     {sort: {createdAt: -1}, limit: 13},
   ).fetch();
-  const messageCount = ChatMessages.find({chatId, "createdBy.id":recepientId}).fetch().length;
+  const messageCount = ChatMessages.find({
+    chatId,
+    'createdBy.id': recepientId,
+  }).fetch().length;
   // console.log('messageCount: ', messageCount);
   const findEarlierMessages = oldestMessage =>
     ChatMessages.find(
@@ -305,7 +415,7 @@ export default withTracker(({route, navigation}) => {
     findEarlierMessages,
     chatSettings,
     observer,
-    messageCount
+    messageCount,
   };
 })(ChatWindow);
 

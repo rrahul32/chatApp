@@ -67,11 +67,10 @@ const scheduleMessage = new ValidatedMethod({
     const thisUser = Meteor.user();
     if (thisUser) {
       let user = thisUser;
-      return createScheduledChatMessage(chatData.chatId, user._id, chatData.text, chatData.scheduledDate, id).catch((e) => {
-        console.log(e);
-        // console.log();
-        throw new Meteor.Error(errorMessages.forbidden);
-      });
+      let id=null;
+      if(chatData.id)
+      id=chatData.id;
+      return createScheduledChatMessage(chatData.chatId, user._id, chatData.text, chatData.scheduledDate, id);
     } else {
       throw new Meteor.Error(errorMessages.forbidden);
     }
