@@ -9,7 +9,7 @@ import axios from 'axios';
 const api = require('../../../api.json');
 import rateLimit from "../../lib/rate-limit";
 import { AppConstants } from "../../config";
-import { createChatMessage } from "./modules";
+import { createChatMessage, deleteDbMsg, editUserMessage } from "./modules";
 import { createScheduledChatMessage, getScheduledMessages } from "./jobManager";
 // console.log("api: ",api.openai.apiKey);
 
@@ -209,13 +209,62 @@ const emotionDetectionFromMessage = new ValidatedMethod({
   }
 });
 
+const deleteMessage = new ValidatedMethod({
+  name: "deleteMessage",
+  validate: new SimpleSchema({
+    "chatId": {
+      type: String
+    },
+    "messageId": {
+      type: String
+    },
+  }).validator(),
+  run(data) {
+    // console.log(chatData);
+    const thisUser = Meteor.user();
+    if (thisUser) {
+      console.log(data);
+      return deleteDbMsg(data.messageId,data.chatId);
+    } else {
+      throw new Meteor.Error(errorMessages.forbidden);
+    }
+  }
+});
+
+const editMessage = new ValidatedMethod({
+  name: "editMessage",
+  validate: new SimpleSchema({
+    "chatId": {
+      type: String
+    },
+    "message": {
+      type: String
+    },
+    "messageId": {
+      type:String
+    }
+  }).validator(),
+  run(data) {
+    // console.log(chatData);
+    const thisUser = Meteor.user();
+    if (thisUser) {
+      console.log(data);
+      return editUserMessage(data);
+    } else {
+      throw new Meteor.Error(errorMessages.forbidden);
+    }
+  }
+});
+
 rateLimit({
   methods: [
     sendMessage,
     scheduleMessage,
     getScheduleMessagesMethod,
     translateMessage,
-    emotionDetectionFromMessage
+    emotionDetectionFromMessage,
+    deleteMessage,
+    editMessage,
   ],
   limit: 100,
   timeRange: 1000

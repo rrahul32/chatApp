@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {GiftedChat, Bubble} from 'react-native-gifted-chat';
+import {GiftedChat} from 'react-native-gifted-chat';
 import {
   StyleSheet,
   View,
@@ -15,6 +15,7 @@ import {default as Icon2} from 'react-native-vector-icons/MaterialCommunityIcons
 import Modal from 'react-native-modal';
 import DatePicker from 'react-native-date-picker';
 import { SERVER_URL } from '../../App';
+import SenderBubble from '../../components/SenderBubble';
 
 
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
@@ -167,6 +168,20 @@ const ChatWindow = ({
     });
   }, [chatSettings.emotionDetection, isDetecting]);
 
+
+  const deleteMessage = (message)=>{
+    Meteor.call('deleteMessage', {chatId,messageId: message._id}, (error, result)=>{
+      if(error)
+      {
+        console.log('error');
+      }
+      else{
+        console.log('result: ', result);
+
+      }
+    })
+    setMsgs(prev=>prev.filter((mess=>mess._id!==message._id)))
+  }
   //
   const handleSubmit = () => {
     // Do something with message and date
@@ -197,22 +212,10 @@ const ChatWindow = ({
   function renderMessage(props) {
     // const [translating, setTranslating] = useState(false);
     const isCurrentUser = props.currentMessage.user._id === user._id;
-
     if (!isCurrentUser) {
-      return <ReceiverBubble data={props} chatId={chatId} />;
+      return <ReceiverBubble data={props} chatId={chatId} deleteMessage={deleteMessage}/>;
     }
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            // set the background color for messages sent by other users
-            marginBottom: 3,
-            marginRight: 7,
-          },
-        }}
-      />
-    );
+    return <SenderBubble data={props} chatId={chatId} deleteMessage={deleteMessage}/>
   }
 
   const onLoadEarlier = async () => {

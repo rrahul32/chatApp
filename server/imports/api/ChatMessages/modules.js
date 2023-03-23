@@ -25,3 +25,18 @@ export const createChatMessage = (chatId, userId, message) => {
     }
   });
 };
+
+export const editUserMessage= (data)=>{
+  const update=ChatMessages.update({_id:data.messageId, chatId: data.chatId},{$set: {text: data.message}})
+  if(update)
+  return true;
+  else
+  return false;
+}
+export const deleteDbMsg= (_id,chatId)=>{
+  const update=ChatMessages.remove({_id, chatId})
+  if(update)
+  return true;
+  else
+  return false;
+}
