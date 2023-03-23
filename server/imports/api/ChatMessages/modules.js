@@ -34,7 +34,7 @@ export const editUserMessage= (data)=>{
   return false;
 }
 export const deleteDbMsg= (_id,chatId)=>{
-  const update=ChatMessages.remove({_id, chatId})
+  const update=ChatMessages.remove({_id, chatId}, {justOne: true})
   if(update)
   return true;
   else
