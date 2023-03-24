@@ -6,7 +6,7 @@ import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 
-const ReceiverBubble = ({data, translation, language}) => {
+const ReceiverBubble = ({data, translation, language, deleteMessage}) => {
   const [msgData, setmsgData] = useState(data);
   const [translating, setTranslating] = useState(false);
   const [translated, setTranslated] = useState(false);
@@ -36,18 +36,6 @@ const ReceiverBubble = ({data, translation, language}) => {
         }
       }
     );
-  }
-
-  const deleteMessage = (message)=>{
-    Meteor.call('deleteMessage', {messageId: message._id}, (error, result)=>{
-      if(error)
-      {
-        console.log('error');
-      }
-      else{
-
-      }
-    })
   }
 
   return (
@@ -97,7 +85,6 @@ const ReceiverBubble = ({data, translation, language}) => {
             );
           }
         }
-
       />
       {translation &&
       <View style={{position: 'absolute', right: 20, top: 10}}>
