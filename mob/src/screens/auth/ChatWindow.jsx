@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Text,
-  TextInput
+  TextInput,
 } from 'react-native';
 import Meteor, {withTracker, Mongo} from '@meteorrn/core';
 import ReceiverBubble from '../../components/ReceiverBubble';
@@ -14,9 +14,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {default as Icon2} from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 import DatePicker from 'react-native-date-picker';
-import { SERVER_URL } from '../../App';
+import {SERVER_URL} from '../../App';
 import SenderBubble from '../../components/SenderBubble';
-
 
 // import ChatWindowHeader from '../../components/ChatWindowHeader';
 
@@ -59,6 +58,7 @@ const ChatWindow = ({
           user: {
             _id: message.createdBy.id,
           },
+          modified: message.modified,
         };
       }),
     );
@@ -129,7 +129,10 @@ const ChatWindow = ({
           <Image
             source={{
               uri: recepient.profile.image
-                ? recepient.profile.image.url.replace(/http:\/\/.*?\/cdn/,`http://${SERVER_URL}/cdn`)
+                ? recepient.profile.image.url.replace(
+                    /http:\/\/.*?\/cdn/,
+                    `http://${SERVER_URL}/cdn`,
+                  )
                 : 'https://via.placeholder.com/150',
             }}
             style={styles.avatar}
@@ -148,13 +151,12 @@ const ChatWindow = ({
       headerRight: () => (
         <View style={{flexDirection: 'row', gap: 20}}>
           <TouchableOpacity
-          onPress={()=>{
-            setMinDate(new Date());
-            setDate(new Date());
-            setMessage('');
-            setShowPopup(true);
-          }}
-          >
+            onPress={() => {
+              setMinDate(new Date());
+              setDate(new Date());
+              setMessage('');
+              setShowPopup(true);
+            }}>
             <Icon2 name="message-text-clock-outline" size={30} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
@@ -168,54 +170,82 @@ const ChatWindow = ({
     });
   }, [chatSettings.emotionDetection, isDetecting]);
 
-
-  const deleteMessage = (message)=>{
-    Meteor.call('deleteMessage', {chatId,messageId: message._id}, (error, result)=>{
-      if(error)
-      {
-        console.log('error');
-      }
-      else{
-        console.log('result: ', result);
-
-      }
-    })
-    setMsgs(prev=>prev.filter((mess=>mess._id!==message._id)))
-  }
+  const deleteMessage = message => {
+    Meteor.call(
+      'deleteMessage',
+      {chatId, messageId: message._id},
+      (error, result) => {
+        if (error) {
+          console.log('error');
+        } else {
+          console.log('result: ', result);
+        }
+      },
+    );
+    setMsgs(prev => prev.filter(mess => mess._id !== message._id));
+  };
   //
   const handleSubmit = () => {
     // Do something with message and date
     setShowPopup(false);
-    if(message!='' && date>new Date()){
-      Meteor.call('scheduleMessage', {chatId, text: message, scheduledDate:date}, (error,result)=>{
-        if(error)
-        {
-          console.log(error);
-          alert("Server error");
-        }
-        else
-        {
-          console.log(result);
-          alert("Success");
-        }
-      })
+    if (message != '' && date > new Date()) {
+      Meteor.call(
+        'scheduleMessage',
+        {chatId, text: message, scheduledDate: date},
+        (error, result) => {
+          if (error) {
+            console.log(error);
+            alert('Server error');
+          } else {
+            console.log(result);
+            alert('Success');
+          }
+        },
+      );
       console.log(message, date);
       // Close the popup
-    }
-    else{
-        alert("Please check the date or message.");
+    } else {
+      alert('Please check the date or message.');
     }
     setMessage('');
     setDate(new Date());
-  }
+  };
 
   function renderMessage(props) {
     // const [translating, setTranslating] = useState(false);
+    const {currentMessage} = props;
     const isCurrentUser = props.currentMessage.user._id === user._id;
     if (!isCurrentUser) {
-      return <ReceiverBubble data={props} chatId={chatId} deleteMessage={deleteMessage}/>;
+      return (
+        <View>
+
+        <ReceiverBubble
+          data={props}
+          chatId={chatId}
+          deleteMessage={deleteMessage}
+          />
+          {
+            currentMessage.modified &&
+            <Text
+            style={{color: 'black', textAlign: 'left'}}
+            >edited</Text>
+          }
+          </View>
+      );
     }
-    return <SenderBubble data={props} chatId={chatId} deleteMessage={deleteMessage}/>
+    return (
+      <View>
+      <SenderBubble
+        data={props}
+        chatId={chatId}
+        deleteMessage={deleteMessage}
+      />
+      {
+        currentMessage.modified &&
+        <Text style={{color: 'black', textAlign: 'right'}}>edited</Text>
+      }
+      </View>
+    );
   }
 
   const onLoadEarlier = async () => {
@@ -235,6 +265,7 @@ const ChatWindow = ({
           user: {
             _id: message.createdBy.id,
           },
+          modified: message.modified,
         })),
       ]);
 
@@ -271,15 +302,14 @@ const ChatWindow = ({
       <Modal
         isVisible={showPopup}
         onBackdropPress={() => setShowPopup(false)}
-        onBackButtonPress={() => setShowPopup(false)}
-      >
-        <View style={{ padding: 20 }}>
+        onBackButtonPress={() => setShowPopup(false)}>
+        <View style={{padding: 20}}>
           {/* Message input */}
           <TextInput
             value={message}
             onChangeText={setMessage}
             placeholder="Enter message"
-            style={{ marginBottom: 10 }}
+            style={{marginBottom: 10}}
           />
 
           {/* Date picker */}
@@ -293,7 +323,7 @@ const ChatWindow = ({
 
           {/* Submit button */}
           <TouchableOpacity onPress={handleSubmit}>
-            <Text style={{ color: 'white' }}>Submit</Text>
+            <Text style={{color: 'white'}}>Submit</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -310,7 +340,7 @@ const ChatWindow = ({
         loadEarlier={!isAllLoaded}
         onLoadEarlier={onLoadEarlier}
         isLoadingEarlier={isLoadingEarlier}
-      />
+        />
     </View>
   );
 };

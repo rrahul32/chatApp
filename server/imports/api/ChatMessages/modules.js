@@ -27,7 +27,7 @@ export const createChatMessage = (chatId, userId, message) => {
 };
 
 export const editUserMessage= (data)=>{
-  const update=ChatMessages.update({_id:data.messageId, chatId: data.chatId},{$set: {text: data.message}})
+  const update=ChatMessages.update({_id:data.messageId, chatId: data.chatId},{$set: {text: data.message, modified: true}})
   if(update)
   return true;
   else

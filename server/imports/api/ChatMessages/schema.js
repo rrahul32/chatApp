@@ -53,6 +53,11 @@ const chatMessagesSchema = new SimpleSchema({
         return new Date();
       }
     }
+  },
+  "modified": {
+    type: Boolean,
+    label: 'Message Edited',
+    defaultValue: false
   }
 });
 
